@@ -1,7 +1,7 @@
 // src/composables/funkRules.ts
 
 import { computed, inject, Ref } from 'vue';
-import { AppEditorType, OmikenType } from '@type';
+import { AppEditorType, OmikenTypeMap } from '@type';
 
 export function FunkRules() {
  // inject
@@ -145,7 +145,7 @@ export function FunkRules() {
  });
 
  // rulesのenableIds に入っているomikujiのプレースホルダーを探す
- const rulesOfPlaces = (Omiken: OmikenType, enableIds?: string[]) =>
+ const rulesOfPlaces = (Omiken: OmikenTypeMap, enableIds?: string[]) =>
   computed(() => {
    if (!enableIds) return Object.values(Omiken.places);
 

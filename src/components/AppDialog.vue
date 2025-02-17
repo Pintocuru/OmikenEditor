@@ -53,7 +53,7 @@
 </template>
 
 <script setup lang="ts">
-import { ListEntry, ListCategory, OmikenEntry, ListEntryCollect, OmikenType } from '@type';
+import { ListEntry, ListCategory, OmikenEntry, ListEntryCollect, OmikenTypeMap } from '@type';
 import DialogOmikuji from '@/components/DialogOmikuji/DialogOmikuji.vue';
 import DialogPlace from '@/components/DialogPlace/DialogPlace.vue';
 import { FunkEmits } from '@/composables/FunkEmits';
@@ -61,7 +61,7 @@ import { FunkEmits } from '@/composables/FunkEmits';
 // Props / emit
 const props = defineProps<{
  listEntry: ListEntryCollect;
- Omiken: OmikenType;
+ Omiken: OmikenTypeMap;
 }>();
 
 const emit = defineEmits<{

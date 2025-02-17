@@ -1,12 +1,12 @@
 // src/composables/funkJSON.ts
-import { DataType, Mode, AppEditorType, OmikenType, ParamsType } from '@type';
+import { DataType, Mode, AppEditorType, OmikenTypeMap, ParamsType } from '@type';
 import { configs } from '@/config';
 import { MySwal } from '@/components/common/partsMySwal';
 import { OmikenValidate } from '@/composables/FunkValidate';
 import OneSDK from '@onecomme.com/onesdk';
 
 // Omikenの保存
-export async function saveOmiken(Omiken: OmikenType): Promise<void> {
+export async function saveOmiken(Omiken: OmikenTypeMap): Promise<void> {
  try {
   // 確認ダイアログを表示
   const result = await MySwal.fire({

@@ -1,6 +1,6 @@
 // composables/FunkOmiken.ts
 import { ref } from 'vue';
-import { OmikenType, OmikenEntry, AppEditorType, ListCategory, PresetOmikenType, OmikenSchema } from '@type';
+import { OmikenEntry, AppEditorType, PresetOmikenType, OmikenSchema, OmikenTypeMap } from '@type';
 import { AppEditorFetch } from '@/composables/FunkJSON';
 import { FunkOmikenUpdater } from './FunkOmikenUpdater';
 import { MySwal } from '@/components/common/partsMySwal';
@@ -11,7 +11,7 @@ const { handleUpdate, handleAddItems, handleDeleteItems, handlePresetUpdate } = 
 
 export const useOmikenStore = defineStore('omiken', () => {
  const AppEditor = ref<AppEditorType>({
-  Omiken: OmikenSchema.parse({}) as OmikenType,
+  Omiken: OmikenSchema.parse({}) as OmikenTypeMap,
   Presets: {},
   Charas: {},
   Scripts: {}
@@ -24,7 +24,7 @@ export const useOmikenStore = defineStore('omiken', () => {
   if (!payload) return;
   const { type, updates, addKeys, delKeys } = payload;
 
-  const newState: OmikenType = JSON.parse(JSON.stringify(AppEditor.value.Omiken));
+  const newState: OmikenTypeMap = JSON.parse(JSON.stringify(AppEditor.value.Omiken));
 
   updates?.forEach((update) => handleUpdate(newState, type, update));
   addKeys?.forEach((addKey) => handleAddItems(newState, type, addKey));

@@ -17,14 +17,14 @@
 
 <script setup lang="ts">
 import { ref, computed, inject, type Ref } from 'vue';
-import { OmikenEntry, OmikujiType, RulesType, AppEditorType, PlaceType, ListCategory } from '@type';
+import { OmikenEntry, OmikujiType, AppEditorType, PlaceType, ListCategory, OmikenRulesType } from '@type';
 import { FunkEmits } from '@/composables/FunkEmits';
 import { MySwal } from '@/components/common/partsMySwal';
 
 const props = defineProps<{
  editMode: 'rule' | 'omikujiRemove' | 'omikujiAdd' | 'omikujiAddDialog' | 'place' | 'placeDialog';
- entry: RulesType | OmikujiType | PlaceType;
- optionRules?: RulesType;
+ entry: OmikenRulesType | OmikujiType | PlaceType;
+ optionRules?: OmikenRulesType;
 }>();
 
 const emit = defineEmits<{
@@ -151,7 +151,7 @@ const handleEnableIdsRemove = () => {
  const type = getEntryType();
  if (type !== 'omikujis' || !props.optionRules || !props.entry) return;
 
- const updatedEntry: RulesType = {
+ const updatedEntry: OmikenRulesType = {
   ...props.optionRules,
   enableIds: props.optionRules.enableIds.filter((id) => id !== props.entry.id)
  };

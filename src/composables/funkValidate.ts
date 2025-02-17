@@ -1,6 +1,6 @@
 // src/composables/funkValidate.ts
 import {
- OmikenType,
+ OmikenTypeMap,
  ThresholdType,
  OmikujiType,
  PlaceType,
@@ -42,7 +42,7 @@ export const OmikenEntryValidate = <T extends ListCategory>(type: T, data: unkno
 };
 
 // メインのバリデーション関数
-export function OmikenValidate(data: Partial<OmikenType>): OmikenType {
+export function OmikenValidate(data: Partial<OmikenTypeMap>): OmikenTypeMap {
  try {
   // バリデーション
   const places = OmikenPlacesValidate(data.places);
@@ -54,7 +54,7 @@ export function OmikenValidate(data: Partial<OmikenType>): OmikenType {
   return { comments, timers, metas, omikujis, places };
  } catch (error) {
   console.error('Omiken validation failed:', error);
-  return OmikenSchema.parse({}) as OmikenType;
+  return OmikenSchema.parse({}) as OmikenTypeMap;
  }
 }
 

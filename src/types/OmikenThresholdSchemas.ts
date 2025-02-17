@@ -159,6 +159,8 @@ export const thresholdSchema = z.discriminatedUnion('type', [
  metaThresholdSchema
 ]);
 
+// ---
+
 // commentのthresholdデフォルト値
 export const commentCriterionInit = {
  conditionType: 'match' as const,

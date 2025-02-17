@@ -45,15 +45,18 @@ import AppHeader from '@/components/AppHeader.vue';
 import AppNavigation from '@/components/AppNavigation.vue';
 import AppList from '@/components/AppList.vue';
 import AppDialog from '@/components/AppDialog.vue';
-import { FunkOmiken } from '@/composables/FunkOmiken';
+import { useOmikenStore } from '@/composables/FunkOmiken';
 import { FunkUI } from '@/composables/FunkUI';
 import { onMounted } from 'vue';
 
 const { naviCategory, listEntry, openEditor } = FunkUI();
 
 // AppEditorのコンポーザブル
-const { AppEditor, AppEditorInitialize, isAppEditorLoading, updateOmiken, updateOmikenPresetData } = FunkOmiken();
+const { AppEditor, isAppEditorLoading, updateOmiken, updateOmikenPresetData, AppEditorInitialize } = useOmikenStore();
 
 // APIから取得
-onMounted(async () => await AppEditorInitialize());
+onMounted(async () => {
+ // piniaの宣言
+ await AppEditorInitialize();
+});
 </script>

@@ -6,7 +6,7 @@
    <v-toolbar-title>
     {{ currentItem.name }}
     <!-- 名前・説明の編集 -->
-    <PartsNameEditor type="places" :currentItem="currentItem" @update:Omiken="updateOmiken" />
+    <PartsNameEditor type="places" :currentItem="currentItem" />
    </v-toolbar-title>
    <template #append>
     <span class="mr-2">ID : {{ currentItem?.id }}</span>

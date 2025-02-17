@@ -39,12 +39,8 @@ const props = defineProps<{
  currentItem: OmikenRulesType | OmikujiType | PlaceType;
 }>();
 
-const emit = defineEmits<{
- (e: 'update:Omiken', payload: OmikenEntry<ListCategory>): void;
-}>();
-
 // コンポーザブル:FunkEmits
-const { updateOmiken, openEditor, updateOmikenEntry } = FunkEmits(emit);
+const { updateOmikenEntry } = FunkEmits();
 
 const dialog = ref(false);
 const localItem = computed(() => ({ ...props.currentItem }));
