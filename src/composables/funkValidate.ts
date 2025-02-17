@@ -1,32 +1,35 @@
 // src/composables/funkValidate.ts
 import {
  OmikenType,
- TypesType,
- RulesType,
  ThresholdType,
  OmikujiType,
  PlaceType,
  ListCategory,
- OmikenTypeMap
+ OmikenTypeMap,
+ OmikenRulesType,
+ CommentRulesType,
+ TimerRulesType,
+ MetaRulesType
 } from '@type';
 import {
+ CommentRulesSchema,
+ MetaRulesSchema,
  OmikenSchema,
  omikujiSchema,
  placeSchema,
  ruleSchema,
- typesSchema
+ TimerRulesSchema
 } from '@/types/OmikenSchemas';
 import { z } from 'zod';
 
 // ---
 
 // データadd用バリデーション
-export const OmikenEntryValidate = <T extends Exclude<ListCategory, 'types'>>(
- type: T,
- data: unknown
-): Omit<OmikenTypeMap, 'types'>[T] => {
- const schemas: Record<keyof Omit<OmikenTypeMap, 'types'>, z.ZodType> = {
-  rules: ruleSchema,
+export const OmikenEntryValidate = <T extends ListCategory>(type: T, data: unknown): OmikenTypeMap[T] => {
+ const schemas: Record<keyof OmikenTypeMap, z.ZodType> = {
+  comments: CommentRulesSchema,
+  timers: TimerRulesSchema,
+  metas: MetaRulesSchema,
   omikujis: omikujiSchema,
   places: placeSchema
  };
@@ -41,13 +44,14 @@ export const OmikenEntryValidate = <T extends Exclude<ListCategory, 'types'>>(
 // メインのバリデーション関数
 export function OmikenValidate(data: Partial<OmikenType>): OmikenType {
  try {
-  // 依存関係の順序に従ってバリデーション
+  // バリデーション
   const places = OmikenPlacesValidate(data.places);
   const omikujis = OmikenOmikujisValidate(data.omikujis, places);
-  const rules = OmikenRulesValidate(data.rules, omikujis);
-  const types = OmikenTypesValidate(data.types, rules);
+  const comments = OmikenRulesValidate(data.comments, omikujis) as Record<string, CommentRulesType>;
+  const timers = OmikenRulesValidate(data.timers, omikujis) as Record<string, TimerRulesType>;
+  const metas = OmikenRulesValidate(data.metas, omikujis) as Record<string, MetaRulesType>;
 
-  return { types, rules, omikujis, places };
+  return { comments, timers, metas, omikujis, places };
  } catch (error) {
   console.error('Omiken validation failed:', error);
   return OmikenSchema.parse({}) as OmikenType;
@@ -84,7 +88,6 @@ export const OmikenOmikujisValidate = (
 
     // placeIdsのフィルタリングと重複除去
     item.placeIds = [...new Set(item.placeIds.filter((id) => places[id]))];
-    item.threshold = OmikenThresholdCompact(item.threshold);
 
     acc[validKey] = omikujiSchema.parse(item);
     return acc;
@@ -98,86 +101,73 @@ export const OmikenOmikujisValidate = (
 
 // ルールのバリデーション
 export const OmikenRulesValidate = (
- rulesRaw: Partial<Record<string, RulesType>> = {},
+ rulesRaw: Partial<Record<string, OmikenRulesType>> = {},
  omikujis: Record<string, OmikujiType>
-): Record<string, RulesType> => {
+): Record<string, OmikenRulesType> => {
  try {
-  return Object.entries(rulesRaw).reduce(
-   (acc, [key, item]) => {
-    if (!item) return acc;
+  // 1. item が undefined でないエントリのみをフィルタリング
+  const validEntries = Object.entries(rulesRaw).filter(
+   (entry): entry is [string, OmikenRulesType] => entry[1] !== undefined
+  );
+
+  // 2. order でソートし、order が未定義の場合はインデックスを基にデフォルト値を設定
+  const sortedRules = validEntries
+   .map(([key, item]) => ({ key, item }))
+   .sort((a, b) => {
+    const aOrder = a.item.order ?? Infinity; // order が未定義の場合は無限大として扱う
+    const bOrder = b.item.order ?? Infinity;
+    return aOrder - bOrder;
+   })
+   .map((entry, index) => ({
+    ...entry,
+    item: {
+     ...entry.item,
+     order: entry.item.order ?? index + 1 // order が未定義の場合はインデックス + 1 を設定
+    }
+   }));
+
+  // 3. バリデーションとフィルタリング
+  const validatedRules = sortedRules.reduce(
+   (acc, { key, item }) => {
+    // ID のバリデーション
     const validKey = OmikenIdValidate(key, item.id);
 
-    // enableIdsのフィルタリングと重複除去
-    item.enableIds = [...new Set(item.enableIds.filter((id) => omikujis[id]))];
-    item.threshold = OmikenThresholdCompact(item.threshold);
+    // omikujis に存在する enable のみを残す
+    const filteredEnables = item.enables.filter((enable) => omikujis[enable.omikujiId]);
 
-    acc[validKey] = ruleSchema.parse(item);
+    // ruleType に基づいて適切なスキーマでバリデーション
+    const schemaMap = {
+     comment: CommentRulesSchema,
+     timer: TimerRulesSchema,
+     meta: MetaRulesSchema
+    };
+    const schema = schemaMap[item.ruleType];
+    if (!schema) {
+     throw new Error(`Unknown rule type: ${item.ruleType}`);
+    }
+
+    // バリデーションを実行
+    const validatedItem = schema.parse({
+     ...item,
+     enables: filteredEnables
+    });
+
+    // 結果を格納
+    acc[validKey] = validatedItem;
     return acc;
    },
-   {} as Record<string, RulesType>
+   {} as Record<string, OmikenRulesType>
   );
+
+  return validatedRules;
  } catch (error) {
   throw wrapError('Rules validation error:', error);
  }
 };
 
-// タイプのバリデーション
-export const OmikenTypesValidate = (
- types: Record<TypesType, string[]> = typesSchema.parse({}) as Record<TypesType, string[]>,
- rules: Record<string, RulesType>
-): Record<TypesType, string[]> => {
- const validatedTypes = JSON.parse(JSON.stringify(types));
-
- // 各タイプの配列をバリデート
- Object.keys(validatedTypes).forEach((typeKey) => {
-  validatedTypes[typeKey] = Array.from(new Set(validatedTypes[typeKey].filter((id: TypesType) => id in rules)));
- });
-
- // 未使用のルールIDを'unused'に追加
- const usedIds = new Set(Object.values(validatedTypes).flat());
- const unusedIds = Object.keys(rules).filter((ruleId) => !usedIds.has(ruleId));
- validatedTypes.unused = [...validatedTypes.unused, ...unusedIds];
-
- return validatedTypes;
-};
-
 // ヘルパー関数
 const OmikenIdValidate = (key: string, id: string): string =>
  key !== id ? (console.warn(`Warning: Key "${key}" does not match id "${id}".`), id) : key;
-
-const OmikenThresholdCompact = (thresholds: ThresholdType[]): ThresholdType[] => {
- return thresholds.map((threshold) => {
-  const result: Partial<ThresholdType> = { conditionType: threshold.conditionType };
-  switch (threshold.conditionType) {
-   case 'target':
-    result.target = null;
-    break;
-   case 'coolDown':
-    result.coolDown = threshold.coolDown;
-    break;
-   case 'syoken':
-    result.syoken = threshold.syoken;
-    break;
-   case 'access':
-    result.access = threshold.access;
-    break;
-   case 'gift':
-    result.gift = threshold.gift;
-    break;
-   case 'count':
-    result.count = threshold.count;
-    break;
-   case 'match':
-    result.match = threshold.match;
-    break;
-   default:
-    console.warn(`Unknown conditionType: ${threshold.conditionType}`);
-    result.conditionType = 'target';
-    result.target = null;
-  }
-  return result as ThresholdType;
- });
-};
 
 const wrapError = (message: string, error: unknown): Error =>
  error instanceof Error ? error : new Error(`${message} ${error}`);

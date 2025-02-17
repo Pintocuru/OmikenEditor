@@ -1,6 +1,6 @@
 // src/types/editor.ts
-import { OmikenTypeMap, OmikenType, TypesType } from './Omiken';
-import { CharaType, PresetOmikenType,  ScriptsType } from './preset';
+import { CommentRulesType, MetaRulesType, OmikenType, OmikujiType, PlaceType, TimerRulesType } from './Omiken';
+import { CharaType, PresetOmikenType, ScriptsType } from './preset';
 
 // エディター用型定義
 
@@ -12,14 +12,24 @@ export interface AppEditorType {
  Scripts: Record<string, ScriptsType>; // preset:Script
 }
 
+// コンテンツの型マッピング
+export type OmikenTypeMap = {
+ comments: CommentRulesType;
+ timers: TimerRulesType;
+ metas: MetaRulesType;
+ omikujis: OmikujiType;
+ places: PlaceType;
+};
+
 // メインカテゴリーの型
 export type CategoryMain = ListCategory | 'presets';
 export type CategorySub = {
- types: never;
- rules: never;
+ comments: never;
+ timers: never;
+ metas: never;
  omikujis: never;
  places: never;
- presets: 'Presets' | 'Charas' | 'Scripts';
+ presets: 'Omiken' | 'Chara' | 'Script';
 };
 export type CategoryActive<T extends CategoryMain = CategoryMain> = {
  main: T; // 現在選択されているメインカテゴリー
@@ -27,7 +37,8 @@ export type CategoryActive<T extends CategoryMain = CategoryMain> = {
 };
 
 // リスト用カテゴリー
-export type ListCategory = 'types' | 'rules' | 'omikujis' | 'places';
+export type RulesCategory = 'comments' | 'timers' | 'metas';
+export type ListCategory = RulesCategory | 'omikujis' | 'places';
 export type ListType = OmikenTypeMap[ListCategory];
 export type ListEntry<T extends ListCategory> = {
  isOpen: boolean; // ダイアログの開閉状態
@@ -43,20 +54,7 @@ export type ListEntryCollect = {
 // ファイル操作用
 export type OmikenEntry<T extends ListCategory> = {
  type: T;
- update?: T extends 'types' ? never : OmikenTypeMap[T];
- addKeys?: AddKeysCategory[T];
- delKeys?: T extends 'types' ? TypesType[] : string | string[];
- reTypes?: T extends 'types' ? Record<TypesType, string[]> : never;
+ updates?: OmikenTypeMap[T][];
+ addKeys?: Partial<OmikenTypeMap[T]>[];
+ delKeys?: string[];
 };
-
-export type AddKeysCategory = {
- types: never;
- rules: PartialListItem<'rules'> & { optionId?: TypesType };
- omikujis:
-  | (PartialListItem<'omikujis'> & { optionId?: string })
-  | (PartialListItem<'omikujis'> & { optionId?: string })[];
- places: PartialListItem<'places'> | PartialListItem<'places'>[];
-};
-
-// addItem用のPartial型(一部のキーだけでデータを作成できる)
-type PartialListItem<T extends ListCategory> = Partial<OmikenTypeMap[T]>;

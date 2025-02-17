@@ -40,12 +40,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { AppEditorType, CategoryActive, ListCategory, ListEntry, OmikenEntry, PlaceValueType } from '@type';
+import { CategoryActive, ListCategory, ListEntry, OmikenEntry, PlaceType, PlaceValueType } from '@type';
 import PartsArrayAction from './common/PartsArrayAction.vue';
 import { FunkEmits } from '@/composables/FunkEmits';
 
 const props = defineProps<{
- AppEditor: AppEditorType;
+ items: Record<string, PlaceType>;
  categoryActive: CategoryActive;
 }>();
 
@@ -59,7 +59,7 @@ const { updateOmiken, openEditorItem } = FunkEmits(emit);
 
 // placesをソートして取得
 const placesNameSort = computed(() => {
- return Object.values(props.AppEditor.Omiken.places).sort((a, b) => {
+ return Object.values(props.items).sort((a, b) => {
   return (a.name || '').localeCompare(b.name || '');
  });
 });
@@ -72,6 +72,6 @@ const getRandomValues = (values: PlaceValueType[], count: number) => {
 
 // アイテムを追加
 const addItem = (type: ListCategory) => {
- emit('update:Omiken', { type, addKeys: [{ name: '新しいプレースホルダー' }] });
+ emit('update:Omiken', { type, addKeys: { name: '新しいプレースホルダー' } });
 };
 </script>

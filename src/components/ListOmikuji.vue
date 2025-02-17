@@ -3,7 +3,7 @@
  <!-- Omikuji List View -->
  <v-row dense>
   <v-col v-for="omikuji in omikujisNameSort" :key="omikuji.id" cols="12" sm="6" md="4" lg="3">
-   <v-card variant="tonal"  hover>
+   <v-card variant="tonal" hover>
     <!-- タイトルバーと操作ボタン -->
     <v-toolbar density="compact" :color="getPostTypeColor(omikuji.post, true)">
      <v-toolbar-title @click="openEditorItem('omikujis', omikuji.id)">
@@ -46,14 +46,14 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import  { ListCategory, ListEntry, OmikenEntry,  CategoryActive, AppEditorType } from '@type';
+import { ListCategory, ListEntry, OmikenEntry, CategoryActive, AppEditorType, OmikujiType } from '@type';
 import PartsArrayAction from '@/components/common/PartsArrayAction.vue';
 import { FunkOmikuji } from '@/composables/FunkOmikuji';
 import { FunkThreshold } from '@/composables/FunkThreshold';
 import { FunkEmits } from '@/composables/FunkEmits';
 
 const props = defineProps<{
- AppEditor: AppEditorType;
+ items: Record<string, OmikujiType>;
  categoryActive: CategoryActive;
 }>();
 
@@ -71,13 +71,13 @@ const { getExampleText } = FunkThreshold();
 
 // omikujisをソート
 const omikujisNameSort = computed(() => {
- return Object.values(props.AppEditor.Omiken.omikujis).sort((a, b) => {
+ return Object.values(props.items).sort((a, b) => {
   return (a.name || '').localeCompare(b.name || '');
  });
 });
 
 // アイテムを追加
-const addItem = (type:ListCategory) => {
- emit('update:Omiken', { type, addKeys: [{name:'新しいおみくじ'}] });
+const addItem = (type: ListCategory) => {
+ emit('update:Omiken', { type, addKeys: [{ name: '新しいおみくじ' }] });
 };
 </script>

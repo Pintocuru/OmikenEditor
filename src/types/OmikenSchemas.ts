@@ -62,7 +62,7 @@ const ScriptParamSchema = z
  );
 
 // 共通部分のスキーマ
-const CommonRuleSchema = z.object({
+export const CommonRuleSchema = z.object({
  ...baseSchema.shape,
  isValid: z.boolean().default(true).catch(true),
  order: z.number().int().nonnegative().default(0).catch(0),
@@ -77,7 +77,7 @@ const CommonRuleSchema = z.object({
 });
 
 // コメントルールのスキーマ
-const CommentRulesSchema = CommonRuleSchema.extend({
+export const CommentRulesSchema = CommonRuleSchema.extend({
  ruleType: z.literal('comment'),
  threshold: commentThresholdSchema.catch(ruleDefault.thresholdComment),
  enables: z
@@ -87,7 +87,7 @@ const CommentRulesSchema = CommonRuleSchema.extend({
 });
 
 // タイマールールのスキーマ（timerConfig を必須）
-const TimerRulesSchema = CommonRuleSchema.extend({
+export const TimerRulesSchema = CommonRuleSchema.extend({
  ruleType: z.literal('timer'),
  threshold: timerThresholdSchema.catch(ruleDefault.thresholdTimer),
  enables: z
@@ -101,7 +101,7 @@ const TimerRulesSchema = CommonRuleSchema.extend({
 });
 
 // メタルールのスキーマ
-const MetaRulesSchema = CommonRuleSchema.extend({
+export const MetaRulesSchema = CommonRuleSchema.extend({
  ruleType: z.literal('meta'),
  threshold: metaThresholdSchema.catch(ruleDefault.thresholdMeta),
  enables: z
@@ -199,9 +199,9 @@ const TypesTypeSchema = z.enum([
 
 // Omikenのスキーマ
 export const OmikenSchema = z.object({
- comment: z.record(CommentRulesSchema).default({}),
- timer: z.record(TimerRulesSchema).default({}),
- meta: z.record(MetaRulesSchema).default({}),
+ comments: z.record(CommentRulesSchema).default({}),
+ timers: z.record(TimerRulesSchema).default({}),
+ metas: z.record(MetaRulesSchema).default({}),
  omikujis: z.record(omikujiSchema).default({}),
  places: z.record(placeSchema).default({})
 });

@@ -30,13 +30,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
-import { OmikenEntry, ListCategory, RulesType, OmikujiType, PlaceType } from '@type';
+import { computed, ref, watch } from 'vue';
+import { OmikenEntry, ListCategory, OmikujiType, PlaceType, OmikenRulesType } from '@type';
 import { FunkEmits } from '@/composables/FunkEmits';
 
 const props = defineProps<{
  type: ListCategory;
- currentItem: RulesType | OmikujiType | PlaceType;
+ currentItem: OmikenRulesType | OmikujiType | PlaceType;
 }>();
 
 const emit = defineEmits<{
@@ -47,15 +47,7 @@ const emit = defineEmits<{
 const { updateOmiken, openEditor, updateOmikenEntry } = FunkEmits(emit);
 
 const dialog = ref(false);
-const localItem = ref({ ...props.currentItem });
-
-watch(
- () => props.currentItem,
- (newValue) => {
-  localItem.value = { ...newValue };
- },
- { deep: true }
-);
+const localItem = computed(() => ({ ...props.currentItem }));
 
 const saveChanges = () => {
  updateOmikenEntry(props.type, localItem.value);

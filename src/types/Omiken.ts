@@ -2,14 +2,15 @@
 
 import {
  baseSchema,
- TypesTypeSchema,
  OneCommePostSchema,
- thresholdSchema,
- ruleSchema,
  omikujiSchema,
- placeSchema
+ placeSchema,
+ CommentRulesSchema,
+ TimerRulesSchema,
+ MetaRulesSchema
 } from './OmikenSchemas';
 import { z } from 'zod';
+import { commentThresholdSchema, metaThresholdSchema, timerThresholdSchema } from './OmikenThresholdSchemas';
 
 ///////////////////////////////////
 // Omiken
@@ -17,28 +18,22 @@ import { z } from 'zod';
 
 // Omiken:おみくじ&初見判定ちゃんBOT用型定義
 export type OmikenType = {
- types: Record<TypesType, string[]>;
- rules: Record<string, RulesType>; // おみくじルール
+ comments: Record<string, CommentRulesType>;
+ timers: Record<string, TimerRulesType>;
+ metas: Record<string, MetaRulesType>;
  omikujis: Record<string, OmikujiType>; // おみくじ
  places: Record<string, PlaceType>; // プレースホルダー
 };
-
-// コンテンツの型マッピング
-export type OmikenTypeMap = {
- types: string[];
- rules: RulesType;
- omikujis: OmikujiType;
- places: PlaceType;
-};
-
-// types
-export type TypesType = z.infer<typeof TypesTypeSchema>;
 
 // BaseType:基本となる項目
 export type BaseType = z.infer<typeof baseSchema>;
 
 // rules:おみくじルールの型定義
-export type RulesType = z.infer<typeof ruleSchema>;
+export type OmikenRulesType = CommentRulesType | TimerRulesType | MetaRulesType;
+
+export type CommentRulesType = z.infer<typeof CommentRulesSchema>;
+export type TimerRulesType = z.infer<typeof TimerRulesSchema>;
+export type MetaRulesType = z.infer<typeof MetaRulesSchema>;
 
 // omikujis:おみくじの型定義
 export type OmikujiType = z.infer<typeof omikujiSchema>;
@@ -49,8 +44,16 @@ export type OneCommePostType = z.infer<typeof OneCommePostSchema>;
 export type PlaceType = z.infer<typeof placeSchema>;
 export type PlaceValueType = z.infer<typeof placeSchema>['values'][number];
 
-// Threshold(rules,omikuji)の条件型
-export type ThresholdType = z.infer<typeof thresholdSchema>;
-export type ConditionType = z.infer<typeof thresholdSchema>['conditionType'];
-export type CountCondition = z.infer<typeof thresholdSchema>['count'];
-export type MatchCondition = z.infer<typeof thresholdSchema>['match'];
+// Threshold の条件型
+export type ThresholdType = CommentThreshold | TimerThreshold | MetaThreshold;
+export type CriterionType = CommentCriterion | TimerCriterion | MetaCriterion;
+
+// 各Threshold
+export type CommentThreshold = z.infer<typeof commentThresholdSchema>;
+export type TimerThreshold = z.infer<typeof timerThresholdSchema>;
+export type MetaThreshold = z.infer<typeof metaThresholdSchema>;
+
+// 各criteria
+export type CommentCriterion = z.infer<typeof commentThresholdSchema>['criteria'][number];
+export type TimerCriterion = z.infer<typeof timerThresholdSchema>['criteria'][number];
+export type MetaCriterion = z.infer<typeof metaThresholdSchema>['criteria'][number];

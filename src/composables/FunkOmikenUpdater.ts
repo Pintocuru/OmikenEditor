@@ -1,97 +1,110 @@
 // composables/FunkOmikenUpdater.ts
-import { OmikenType, ListCategory, TypesType, OmikenEntry, AddKeysCategory } from '@type';
+import { OmikenType, ListCategory, OmikenTypeMap, OmikenSchema, PresetOmikenType } from '@type';
 import { OmikenEntryValidate } from '@/composables/FunkValidate';
 
 export function FunkOmikenUpdater() {
- // 配列化のユーティリティ関数
- const toArray = <T>(value: T | T[] | undefined): T[] => (Array.isArray(value) ? value : value ? [value] : []);
-
  // 更新処理
- const handleUpdate = <T extends Exclude<ListCategory, 'types'>>(
-  state: OmikenType,
-  type: T,
-  update: Record<string, any>
- ) => Object.assign(state[type], update);
+ const handleUpdate = <T extends ListCategory>(state: OmikenType, type: T, update: OmikenTypeMap[T]) => {
+  const { resolvedId, originalId } = resolveIdConflict(state[type], update);
+  const updatedItem = { ...update, id: resolvedId };
+
+  if (originalId && originalId !== resolvedId) {
+   // 既存のデータを新しいIDで更新し、古いデータを削除
+   state[type][resolvedId] = updatedItem;
+   delete state[type][originalId];
+  } else {
+   // 通常の更新
+   state[type][resolvedId] = updatedItem;
+  }
+ };
 
  // 追加処理
- const handleAddItems = <T extends Exclude<ListCategory, 'types'>>(
-  state: OmikenType,
-  type: T,
-  addKeys: OmikenEntry<T>['addKeys']
- ) => {
-  toArray(addKeys).forEach((item: AddKeysCategory[T]) => {
-   const optionId = 'optionId' in item ? item.optionId : undefined;
-   const newItem = OmikenEntryValidate(type, item);
-
-   // 基本データの追加
-   state[type][newItem.id] = newItem;
-
-   // type別の追加処理
-   if (type === 'rules') {
-    addRuleToTypes(state, optionId, newItem.id);
-   } else if (type === 'omikujis' && optionId) {
-    addOmikujiToRule(state, optionId, newItem.id);
-   }
-  });
+ const handleAddItems = <T extends ListCategory>(state: OmikenType, type: T, addKey: Partial<OmikenTypeMap[T]>) => {
+  const newItem = OmikenEntryValidate(type, addKey);
+  state[type][newItem.id] = newItem;
  };
 
  // 削除処理
- const handleDeleteItems = <T extends Exclude<ListCategory, 'types'>>(
-  state: OmikenType,
-  type: T,
-  delKeys: string | string[]
- ) => {
-  toArray(delKeys).forEach((key) => {
-   delete state[type][key];
+ const handleDeleteItems = <T extends ListCategory>(state: OmikenType, type: T, delKey: string) => {
+  delete state[type][delKey];
+ };
 
-   if (type === 'rules') {
-    removeFromTypes(state, key);
-   } else if (type === 'omikujis') {
-    removeFromRules(state, key);
+ // プリセット処理
+ const handlePresetUpdate = (state: OmikenType, presetRaw: PresetOmikenType): OmikenType => {
+  const { item, isOverwrite = false } = presetRaw;
+  const preset = OmikenSchema.parse(item) as OmikenType;
+  const updatedState = { ...state };
+
+  (Object.keys(state) as (keyof OmikenType)[]).forEach((category) => {
+   if (isOverwrite) {
+    // 上書きモードの場合は、プリセットのデータをそのまま使用
+    // @ts-ignore
+    updatedState[category] = preset[category];
+   } else {
+    // 追加モードの場合は、既存のデータを保持しながら新しいアイテムを追加
+    // @ts-ignore
+    updatedState[category] = processItemsWithIdCheck(state[category], preset[category]);
    }
   });
+
+  return updatedState;
  };
 
- // rulesをtypesに追加
-const addRuleToTypes = (state: OmikenType, optionId: string | undefined, newItemId: string) => {
- if (!optionId || !Object.values(state.types).some((ids) => ids.includes(optionId) && ids.push(newItemId))) {
-  state.types.unused.push(newItemId);
- }
-};
+ const processItemsWithIdCheck = <K extends keyof OmikenType>(
+  current: OmikenType[K],
+  preset: OmikenType[K]
+ ): OmikenType[K] => {
+  const result = { ...current };
+  const existingIds = new Set(Object.values(current).map((item) => item.id));
 
- // omikujiをruleに追加
- const addOmikujiToRule = (state: OmikenType, optionId: string, newItemId: string) => {
-  state.rules[optionId] = {
-   ...state.rules[optionId],
-   enableIds: [...state.rules[optionId].enableIds, newItemId]
-  };
+  // プリセットの各アイテムに対して処理
+  for (const [key, value] of Object.entries(preset)) {
+   if (existingIds.has(value.id)) {
+    // IDが重複する場合は、タイムスタンプを付与した新しいIDを生成
+    const timestamp = new Date().getTime();
+    const newId = `${value.id}_${timestamp}`;
+    result[key] = { ...value, id: newId };
+    console.warn(`ID '${value.id}' は既に存在します。新しいID '${newId}' を生成しました。`);
+   } else if (!(key in current)) {
+    // 重複がなく、かつ現在のデータに存在しないキーの場合は追加
+    result[key] = value;
+    existingIds.add(value.id);
+   }
+  }
+
+  return result;
  };
 
- // typesから要素を削除
- const removeFromTypes = (state: OmikenType, key: string) => {
-  Object.values(state.types).forEach((typeArray) => {
-   const index = typeArray.indexOf(key);
-   if (index !== -1) typeArray.splice(index, 1);
-  });
- };
+ // ID重複チェックと解決のための関数
+ const resolveIdConflict = <T extends ListCategory>(
+  state: OmikenType[T],
+  item: OmikenTypeMap[T]
+ ): {
+  resolvedId: string;
+  originalId: string | undefined;
+  hasConflict: boolean;
+ } => {
+  const { id } = item;
+  const existingKeys = Object.keys(state);
+  const originalId = existingKeys.find((key) => state[key].id === id);
 
- // rulesから要素を削除
- const removeFromRules = (state: OmikenType, key: string) => {
-  Object.values(state.rules).forEach((rule) => {
-   const index = rule.enableIds.indexOf(key);
-   if (index !== -1) rule.enableIds.splice(index, 1);
-  });
- };
+  // IDの重複がない場合
+  if (!state[id] || originalId === id) {
+   return { resolvedId: id, originalId: undefined, hasConflict: false };
+  }
 
- // 順序の再編成
- const handleReTypes = (state: OmikenType, reTypes: Record<TypesType, string[]>) => {
-  Object.assign(state.types, reTypes);
+  // IDが重複している場合、タイムスタンプを付与した新しいIDを生成
+  const timestamp = new Date().getTime();
+  const resolvedId = `${id}_${timestamp}`;
+
+  console.warn(`ID '${id}' は既に存在します。新しいID '${resolvedId}' を生成しました。`);
+  return { resolvedId, originalId, hasConflict: true };
  };
 
  return {
   handleUpdate,
   handleAddItems,
   handleDeleteItems,
-  handleReTypes
+  handlePresetUpdate
  };
 }

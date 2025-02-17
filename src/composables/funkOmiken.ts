@@ -1,34 +1,50 @@
 // composables/FunkOmiken.ts
-import { provide, ref } from 'vue';
+import { ref } from 'vue';
 import { OmikenType, OmikenEntry, AppEditorType, ListCategory, PresetOmikenType, OmikenSchema } from '@type';
 import { AppEditorFetch } from '@/composables/FunkJSON';
 import { FunkOmikenUpdater } from './FunkOmikenUpdater';
-import { FunkOmikenPreset } from './FunkOmikenPreset';
 import { MySwal } from '@/components/common/partsMySwal';
+import { defineStore } from 'pinia';
 
-const defaultAppEditor: AppEditorType = {
- Presets: {},
- Charas: {},
- Scripts: {},
- Omiken: OmikenSchema.parse({}) as OmikenType
-};
+// 他のコンポーザブルを初期化
+const { handleUpdate, handleAddItems, handleDeleteItems, handlePresetUpdate } = FunkOmikenUpdater();
 
-export function FunkOmiken() {
- const AppEditor = ref<AppEditorType>(defaultAppEditor);
+export const useOmikenStore = defineStore('omiken', () => {
+ const AppEditor = ref<AppEditorType>({
+  Omiken: OmikenSchema.parse({}) as OmikenType,
+  Presets: {},
+  Charas: {},
+  Scripts: {}
+ });
+
  const isAppEditorLoading = ref(true);
 
- // 他のコンポーザブルを初期化
- const { handleUpdate, handleAddItems, handleDeleteItems, handleReTypes } = FunkOmikenUpdater();
- const { handlePresetUpdate } = FunkOmikenPreset();
+ // Omikenの更新
+ const updateOmiken = (payload: OmikenEntry<ListCategory>): void => {
+  if (!payload) return;
+  const { type, updates, addKeys, delKeys } = payload;
 
- // provide
- provide('AppEditorKey', AppEditor);
+  const newState: OmikenType = JSON.parse(JSON.stringify(AppEditor.value.Omiken));
 
- // 初期化処理の実行
- async function AppEditorInitialize() {
+  updates?.forEach((update) => handleUpdate(newState, type, update));
+  addKeys?.forEach((addKey) => handleAddItems(newState, type, addKey));
+  delKeys?.forEach((delKey) => handleDeleteItems(newState, type, delKey));
+
+  AppEditor.value.Omiken = newState;
+  console.info('おみくじデータが更新されたよ', newState);
+ };
+
+ // Presetからの更新
+ const updateOmikenPresetData = (preset: PresetOmikenType) => {
+  const newState = handlePresetUpdate(AppEditor.value.Omiken, preset);
+  AppEditor.value.Omiken = newState;
+ };
+
+ // 初期化処理
+ const AppEditorInitialize = async () => {
   try {
    AppEditor.value = await AppEditorFetch();
-   isAppEditorLoading.value = false; // ローディング完了
+   isAppEditorLoading.value = false;
    // データ読み込み成功の通知
    await MySwal.fire({
     title: '読み込み完了',
@@ -47,38 +63,13 @@ export function FunkOmiken() {
     confirmButtonText: 'OK'
    });
   }
- }
-
- // Omikenの更新(rules/omikujis/places)
- function updateOmiken(payload: OmikenEntry<ListCategory>) {
-  if (!payload || !AppEditor.value) return;
-  const { type, update, addKeys, delKeys, reTypes } = payload;
-
-  const newState: OmikenType = JSON.parse(JSON.stringify(AppEditor.value.Omiken));
-
-  if (type !== 'types') {
-   if (update) handleUpdate(newState, type, update);
-   if (addKeys) handleAddItems(newState, type, addKeys);
-   if (delKeys) handleDeleteItems(newState, type, delKeys);
-  } else if (reTypes) {
-   handleReTypes(newState, reTypes);
-  }
-  AppEditor.value.Omiken = newState;
-  console.info('おみくじデータが更新されたよ', AppEditor.value.Omiken);
- }
-
- // Presetからの更新
- const updateOmikenPresetData = (preset: PresetOmikenType) => {
-  if (!AppEditor.value) return;
-  const newState = handlePresetUpdate(AppEditor.value.Omiken, preset);
-  AppEditor.value.Omiken = newState;
  };
 
  return {
   AppEditor,
-  AppEditorInitialize,
   isAppEditorLoading,
   updateOmiken,
-  updateOmikenPresetData
+  updateOmikenPresetData,
+  AppEditorInitialize
  };
-}
+});

@@ -4,8 +4,8 @@
  <v-scroll-x-transition mode="out-in">
   <div v-if="currentListComponent" :key="getComponentKey">
    <component
-    :is="currentListComponent"
-    :AppEditor="AppEditor"
+    :is="currentListComponent.component"
+    :items="currentListComponent.items"
     :categoryActive="categoryActive"
     @update:Omiken="updateOmiken"
     @update:OmikenPreset="updateOmikenPreset"
@@ -43,20 +43,21 @@ const { openList, updateOmiken, openEditor, updateOmikenPreset } = FunkEmits(emi
 
 // 子コンポーネントの指定
 const currentListComponent = computed(() => {
- const componentMap = {
-  types: null,
-  rules: ListRules,
-  omikujis: ListOmikuji,
-  places: ListPlace,
-  presets: ListPreset
- } as const;
+ const componentMap: Record<string, { component: any; items: any }> = {
+  comments: { component: ListRules, items: props.AppEditor.Omiken.comments },
+  timers: { component: ListRules, items: props.AppEditor.Omiken.timers },
+  metas: { component: ListRules, items: props.AppEditor.Omiken.metas },
+  omikujis: { component: ListOmikuji, items: props.AppEditor.Omiken.omikujis },
+  places: { component: ListPlace, items: props.AppEditor.Omiken.places },
+  presets: { component: ListPreset, items: props.AppEditor }
+ };
 
- return componentMap[props.categoryActive.main];
+ return componentMap[props.categoryActive.main] || null;
 });
 
 // コンポーネントのkeyを生成するcomputed
 const getComponentKey = computed(() => {
-  const sub = props.categoryActive.sub || 'default';
-  return `${props.categoryActive.main}-${sub}-component`;
+ const sub = props.categoryActive.sub || 'default';
+ return `${props.categoryActive.main}-${sub}-component`;
 });
 </script>
