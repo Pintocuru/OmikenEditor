@@ -1,7 +1,7 @@
 <!-- src/components/ListRules/ListRulesOmikujis.vue -->
 <template>
  <draggable
-  v-model="currentItem.enableIds"
+  v-model="currentItem.enables"
   item-key="id"
   class="d-flex flex-wrap w-100"
   tag="div"
@@ -132,7 +132,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { ListCategory, ListEntry, OmikenTypeMap, OmikenEntry, OmikujiType, RulesType } from '@type';
+import { ListEntry, OmikenTypeMap, OmikenEntry, OmikujiType, RulesType } from '@type';
 import PartsArrayAction from '@/components/common/PartsArrayAction.vue';
 import { FunkRules } from '@/composables/FunkRules';
 import { FunkOmikuji } from '@/composables/FunkOmikuji';
@@ -142,13 +142,7 @@ import draggable from 'vuedraggable';
 
 const props = defineProps<{
  rule: RulesType;
- omikujis: Record<string, OmikenTypeMap['omikujis']>;
  showWeightEdit: boolean;
-}>();
-
-const emit = defineEmits<{
- (e: 'update:Omiken', payload: OmikenEntry<ListCategory>): void;
- (e: 'open-editor', editorItem: ListEntry<ListCategory>): void;
 }>();
 
 // コンポーザブル:FunkEmits

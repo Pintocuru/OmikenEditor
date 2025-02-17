@@ -12,20 +12,14 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { AppEditorType, CategoryActive, ListCategory, OmikenEntry, PresetType } from '@type';
+import { AppEditorType, CategoryActive, OmikenEntry, PresetAnyType, PresetTypeMap } from '@type';
 import ListPresetContent from '@/components/ListPreset/ListPresetContent.vue';
 import { FunkEmits } from '@/composables/FunkEmits';
 
 // Props Emits
 const props = defineProps<{
- items: AppEditorType;
+ items: PresetAnyType;
  categoryActive: CategoryActive;
-}>();
-
-const emit = defineEmits<{
- (e: 'update:Omiken', payload: OmikenEntry<ListCategory>): void;
- (e: 'update:OmikenPreset', preset: PresetType): void;
- (e: 'update:category', value: CategoryActive): void;
 }>();
 
 // コンポーザブル:FunkEmits

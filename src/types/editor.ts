@@ -19,7 +19,7 @@ export type CategorySub = {
 };
 export type CategoryActive<T extends CategoryMain = CategoryMain> = {
  main: T; // 現在選択されているメインカテゴリー
- sub?: CategorySub[T]; // メインカテゴリーに対応するサブカテゴリー（オプショナル）
+ sub: CategorySub[T]; // メインカテゴリーに対応するサブカテゴリー（オプショナル）
 };
 
 // リスト用カテゴリー
@@ -39,6 +39,6 @@ export type ListEntryCollect = {
 export type OmikenEntry<T extends OmikenCategory> = {
  type: T;
  updates?: OmikenTypeMap[T][];
- addKeys?: Partial<OmikenTypeMap[T]>[];
+ addKeys?: Partial<OmikenTypeMap[T][string]>[];
  delKeys?: string[];
 };

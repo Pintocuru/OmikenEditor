@@ -8,23 +8,10 @@ export function FunkEmits() {
  const omikenStore = useOmikenStore();
 
  // Omiken のアップデート(アイテム)
- const updateOmikenEntry = <T extends keyof OmikenTypeMap>(
-  type: T,
-  update: Record<string, OmikenTypeMap[T]> | OmikenTypeMap[T] | OmikenTypeMap[T][]
- ) => {
-  let newUpdate: OmikenTypeMap[T][] = [];
-
-  if (Array.isArray(update)) {
-   // `update` が配列の場合、そのまま使用
-   newUpdate = update;
-  } else if (typeof update === 'object' && 'id' in update) {
-   // `update` が単一オブジェクトの場合、配列に変換
-   newUpdate = [update as OmikenTypeMap[T]];
-  } else {
-   // `update` がマップ形式の場合、値の配列に変換
-   newUpdate = Object.values(update as Record<string, OmikenTypeMap[T]>);
-  }
-  omikenStore.updateOmiken({ type, updates: newUpdate });
+ const updateOmikenEntry = <T extends keyof OmikenTypeMap>(type: T, update: OmikenTypeMap[T] | OmikenTypeMap[T][]) => {
+  // 配列に変換
+  const updates = Array.isArray(update) ? update : [update];
+  omikenStore.updateOmiken({ type, updates });
  };
 
  // ---

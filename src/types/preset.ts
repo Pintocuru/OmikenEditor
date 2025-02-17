@@ -20,6 +20,7 @@ export type PresetTypeMap = {
  Charas: Record<string, CharaType>; // preset:Chara
  Scripts: Record<string, ScriptsType>; // preset:Script
 };
+export type PresetAnyType = PresetTypeMap[keyof PresetTypeMap];
 
 // おみくじデータ付きpresetデータ
 export interface PresetOmikenType extends PresetBaseType {

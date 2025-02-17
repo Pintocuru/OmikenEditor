@@ -2,19 +2,18 @@
 <template>
  <div v-if="items" v-for="rule in items" :key="rule.id" class="mb-2">
   <v-card elevation="0" class="w-100" @click="togglePanel(rule.id)" :class="{ 'cursor-pointer': true }">
-   <v-toolbar :color="getColor(rule)">
+   <v-toolbar :color="rule.color">
     <v-toolbar-title class="ml-2">
      <!-- TODO DialogTypes は廃止、代わりにダイアログでorderを編集するものを新規作成 -->
-     <DialogTypes :rule="rule" :Omiken="items.Omiken" @update:Omiken="updateOmiken" />
+     <DialogTypes :rule="rule" :Omiken="items.Omiken" />
      {{ rule.name }}
-     <PartsNameEditor type="rules" :currentItem="rule" @update:Omiken="updateOmiken" />
+     <PartsNameEditor type="rules" :currentItem="rule" />
 
-     <v-chip label class="ml-4"> {{ getEnablesLength(rule) }} items </v-chip>
+     <v-chip label class="ml-4"> {{ rule.enables.length }} items </v-chip>
 
      <PartsToolbarColor
-      v-if="isRuleType(rule)"
       v-model="rule.color"
-      @update:model-value="(color) => updateRuleColor(rule, color)"
+      @update:model-value="(color) => updateRuleColor(rule, color, props.categoryActive.sub)"
      />
 
      <v-icon class="ml-2">
@@ -23,7 +22,7 @@
     </v-toolbar-title>
     <template #append>
      <span class="mr-2">ID : {{ rule.id }}</span>
-     <PartsArrayAction editMode="rule" :entry="rule" @update:Omiken="updateOmiken" />
+     <PartsArrayAction editMode="rule" :entry="rule" />
     </template>
    </v-toolbar>
    <v-card-text class="list-group d-flex flex-wrap">
@@ -33,18 +32,11 @@
 
   <v-expand-transition>
    <div v-show="uiState.expandedPanels.includes(rule.id)">
-    <ListRulesTabs v-if="isRuleType(rule)" :rule="rule" @showWeightEdit="isWeightEdit" @update:Omiken="updateOmiken" />
+    <ListRulesTabs :rule="rule" @showWeightEdit="isWeightEdit" />
 
     <v-card-text>
      <v-row>
-      <ListRulesOmikujiView
-       v-if="isRuleType(rule)"
-       :rule="rule"
-       :omikujis="items.Omiken.omikujis"
-       :showWeightEdit="uiState.showWeightEditor"
-       @open-editor="openEditor"
-       @update:Omiken="updateOmiken"
-      />
+      <ListRulesOmikujiView :rule="rule" :showWeightEdit="uiState.showWeightEditor" />
      </v-row>
     </v-card-text>
    </div>
@@ -58,19 +50,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ComputedRef, ref } from 'vue';
-import {
- OmikenEntry,
- ListCategory,
- ListEntry,
- CategoryActive,
- AppEditorType,
- OmikenTypeMap,
- OmikenRulesType,
- CommentRulesType,
- TimerRulesType,
- MetaRulesType
-} from '@type';
+import { ref } from 'vue';
+import { CategoryActive, RulesTypeMap, OmikenTypeMap, RulesType } from '@type';
 import PartsArrayAction from '@/components/common/PartsArrayAction.vue';
 import DialogTypes from '@/components/DialogTypes.vue';
 import ListRulesOmikujiView from '@/components/ListRules/ListRulesOmikujis.vue';
@@ -78,38 +59,21 @@ import ListRulesTabs from '@/components/ListRules/ListRulesTabs.vue';
 import PartsNameEditor from '@/components/common/PartsNameEditor.vue';
 import PartsToolbarColor from '@/components/common/PartsToolbarColor.vue';
 import { FunkEmits } from '@/composables/FunkEmits';
+import { useOmikenStore } from '@/composables/FunkOmiken';
 
 const props = defineProps<{
- items: Record<string, OmikenRulesType>;
- categoryActive: CategoryActive;
+ categoryActive: CategoryActive<'rules'>;
+ items: Record<string, RulesType>;
 }>();
 
-const emit = defineEmits<{
- (e: 'update:Omiken', payload: OmikenEntry<ListCategory>): void;
- (e: 'open-editor', editorItem: ListEntry<ListCategory>): void;
-}>();
-
-const { updateOmiken, openEditor, updateOmikenEntry } = FunkEmits(emit);
+// piniaの宣言
+const omikenStore = useOmikenStore();
+const { updateOmikenEntry } = FunkEmits();
 
 const uiState = ref({
  expandedPanels: [] as string[],
  showWeightEditor: false
 });
-
-// 型ガード関数
-function isRuleType(item: any): item is OmikenRulesType {
- return item && typeof item === 'object' && 'ruleType' in item && ['comment', 'timer', 'meta'].includes(item.ruleType);
-}
-
-// カラーの取得
-const getColor = (rule: any): string => {
- return isRuleType(rule) ? rule.color : '#66FFFF';
-};
-
-// enablesの長さを取得
-const getEnablesLength = (rule: any): number => {
- return isRuleType(rule) ? rule.enables.length : 0;
-};
 
 // パネルの開閉
 const togglePanel = (ruleId: string) => {
@@ -128,17 +92,13 @@ const isWeightEdit = (showWeightEditor: boolean) => {
 };
 
 // ルールの色を更新
-const updateRuleColor = (rule: OmikenRulesType, color: string) => {
- if (isRuleType(rule)) {
-  updateOmikenEntry(props.categoryActive.main as ListCategory, { ...rule, color });
- }
+const updateRuleColor = <T extends keyof RulesTypeMap>(rule: RulesTypeMap[T], color: string, category: T) => {
+ const updatedRule = { ...rule, color } as unknown as OmikenTypeMap[T];
+ updateOmikenEntry(category, updatedRule);
 };
 
 // アイテムの追加
 const addItem = () => {
- emit('update:Omiken', {
-  type: props.categoryActive.main as ListCategory,
-  addKeys: { name: '新しいルール' }
- });
+ omikenStore.updateOmiken({ type: props.categoryActive.sub, addKeys: [{ name: '新しいルール' }] });
 };
 </script>

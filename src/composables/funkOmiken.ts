@@ -1,6 +1,6 @@
 // composables/FunkOmiken.ts
 import { ref } from 'vue';
-import { OmikenEntry, AppEditorType, PresetOmikenType, OmikenSchema, OmikenTypeMap } from '@type';
+import { OmikenEntry, AppEditorType, PresetOmikenType, OmikenSchema, OmikenTypeMap, OmikenCategory } from '@type';
 import { AppEditorFetch } from '@/composables/FunkJSON';
 import { FunkOmikenUpdater } from './FunkOmikenUpdater';
 import { MySwal } from '@/components/common/partsMySwal';
@@ -20,7 +20,7 @@ export const useOmikenStore = defineStore('omiken', () => {
  const isAppEditorLoading = ref(true);
 
  // Omikenの更新
- const updateOmiken = (payload: OmikenEntry<ListCategory>): void => {
+ const updateOmiken = (payload: OmikenEntry<OmikenCategory>): void => {
   if (!payload) return;
   const { type, updates, addKeys, delKeys } = payload;
 
