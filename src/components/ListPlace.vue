@@ -32,7 +32,7 @@
  </v-row>
 
  <v-sheet>
-  <v-btn block @click="addItem('places')" color="primary" variant="flat" class="mt-6">
+  <v-btn block @click="addItem()" color="primary" variant="flat" class="mt-6">
    <v-icon left>mdi-plus</v-icon> 📍 プレースホルダーの追加
   </v-btn>
  </v-sheet>
@@ -40,22 +40,20 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { CategoryActive, ListCategory, ListEntry, OmikenEntry, PlaceType, PlaceValueType } from '@type';
+import { CategoryActive, ListEntry, OmikenEntry, PlaceType, PlaceValueType } from '@type';
 import PartsArrayAction from './common/PartsArrayAction.vue';
 import { FunkEmits } from '@/composables/FunkEmits';
+import { useOmikenStore } from '@/composables/FunkOmiken';
 
 const props = defineProps<{
  items: Record<string, PlaceType>;
  categoryActive: CategoryActive;
 }>();
 
-const emit = defineEmits<{
- (e: 'update:Omiken', payload: OmikenEntry<ListCategory>): void;
- (e: 'open-editor', editorItem: ListEntry<ListCategory>): void;
-}>();
-
+// piniaの宣言
+const omikenStore = useOmikenStore();
 // コンポーザブル:FunkEmits
-const { updateOmiken, openEditorItem } = FunkEmits(emit);
+const { updateOmiken, openEditorItem } = FunkEmits();
 
 // placesをソートして取得
 const placesNameSort = computed(() => {
@@ -71,7 +69,7 @@ const getRandomValues = (values: PlaceValueType[], count: number) => {
 };
 
 // アイテムを追加
-const addItem = (type: ListCategory) => {
- emit('update:Omiken', { type, addKeys: { name: '新しいプレースホルダー' } });
+const addItem = () => {
+ omikenStore.updateOmiken({ type: 'places', addKeys: [{ name: '新しいプレースホルダー' }] });
 };
 </script>

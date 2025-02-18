@@ -1,17 +1,6 @@
 // src/composables/FunkEmits.ts
 
-import {
- ListEntry,
- OmikenType,
- OmikenEntry,
- PresetOmikenType,
- CategoryActive,
- RulesType,
- RuleCategory,
- RulesTypeMap,
- OmikenCategory,
- OmikenTypeMap
-} from '@type';
+import { ListEntry, OmikenEntry, PresetOmikenType, CategoryActive, OmikenCategory, OmikenTypeMap } from '@type';
 import { useOmikenStore } from './FunkOmiken';
 
 export function FunkEmits() {
@@ -19,12 +8,9 @@ export function FunkEmits() {
  const omikenStore = useOmikenStore();
 
  // Omiken のアップデート
- const updateOmikenEntry = <T extends OmikenCategory>(
-  type: T,
-  update: T extends RuleCategory ? RulesTypeMap<T> | RulesTypeMap<T>[] : OmikenTypeMap<T> | OmikenTypeMap<T>[]
- ) => {
+ const updateOmikenEntry = <T extends OmikenCategory>(type: T, update: OmikenTypeMap<T> | OmikenTypeMap<T>[]) => {
   const updates = Array.isArray(update) ? update : [update]; // 配列チェック
-  omikenStore.updateOmiken({ type, updates: updates as OmikenTypeMap<T>[] });
+  omikenStore.updateOmiken({ type, updates: updates });
  };
 
  // ---

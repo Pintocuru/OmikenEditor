@@ -1,21 +1,23 @@
 // src/types/OmikenTypes.ts
-import { CommentThreshold, MetaThreshold, ThresholdTypes, TimerThreshold } from './OmikenThresholdTypes';
+import { CommentThreshold, MetaThreshold, ThresholdTypesMap, TimerThreshold } from './OmikenThresholdTypes';
 import { ScriptParam } from './preset';
 
 // おみくじデータの型定義
-export type OmikenTypeMap = {
- [K in RuleCategory]: Record<string, RulesTypeMap[K]>;
-} & {
- omikujis: Record<string, OmikujiType>;
- places: Record<string, PlaceType>;
+export type OmikenType = {
+ [K in OmikenCategory]: Record<string, OmikenTypeMap<K>>;
 };
-export type OmikenAnyType = OmikenTypeMap[OmikenCategory];
 
 // 基本的なカテゴリー定義
-export const ruleCategories = ['comments', 'timers', 'metas'] as const;
-export type RuleCategory = (typeof ruleCategories)[number];
 export type OmikenCategory = RuleCategory | 'omikujis' | 'places';
+export type OmikenTypeMap<T extends OmikenCategory> = {
+ comments: CommentRulesType;
+ timers: TimerRulesType;
+ metas: MetaRulesType;
+ omikujis: OmikujiType;
+ places: PlaceType;
+}[T];
 
+// BaseType
 export type BaseType = {
  id: string;
  name: string;
@@ -23,12 +25,10 @@ export type BaseType = {
 };
 
 // rules
-export type RulesType = RulesTypeMap[RuleCategory];
-export type RulesTypeMap = {
- comments: CommentRulesType;
- timers: TimerRulesType;
- metas: MetaRulesType;
-};
+export const ruleCategories = ['comments', 'timers', 'metas'] as const;
+export type RuleCategory = (typeof ruleCategories)[number];
+
+export type RulesTypeMap<T extends RuleCategory> = OmikenTypeMap<T>;
 
 // 共通rules
 type CommonRulesType = BaseType & {
@@ -37,7 +37,7 @@ type CommonRulesType = BaseType & {
  color: string;
  script?: {
   scriptId: string;
-  scriptParams: Array<ScriptParam<string | number | boolean>> | null; // 外部スクリプトに渡す引数(Scriptから取得する)
+  scriptParams: Array<ScriptParam<'string' | 'number' | 'boolean'>> | null; // 外部スクリプトに渡す引数(Scriptから取得する)
  };
 };
 
@@ -66,10 +66,11 @@ export type MetaRulesType = CommonRulesType & {
  enables: RulesSubType<MetaThreshold>[];
 };
 
-export type RulesSubType<T extends ThresholdTypes> = {
+// 抽選するおみくじ
+export type RulesSubType<Condition extends ThresholdTypesMap<RuleCategory>> = {
  rank: number; // 優先度
  weight: number; // 出現割合
- threshold: T; //発動条件
+ threshold: Condition; //発動条件
  omikujiId: string; // 適用するおみくじのid
 };
 
@@ -77,7 +78,7 @@ export type RulesSubType<T extends ThresholdTypes> = {
 export type OmikujiType = BaseType & {
  addStatus?: `<<${string}>>` | string | null; // visit.statusの変更(nullで消去)
  addPoints?: `<<${string}>>` | string | null; // visit.pointの変更(nullで消去)
- scriptParams: Array<ScriptParam<string | number | boolean>> | null; // 外部スクリプトに渡す引数(Scriptから取得する)
+ scriptParams: Array<ScriptParam<'string' | 'number' | 'boolean'>> | null; // 外部スクリプトに渡す引数(Scriptから取得する)
  placeIds: string[]; // 使用するプレースホルダーのid
  post: OneCommePostType[];
 };

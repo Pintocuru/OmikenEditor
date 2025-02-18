@@ -3,23 +3,16 @@
  <v-app theme="dark">
   <!-- ローディング中の表示 -->
   <template v-if="isAppEditorLoading">
-   <v-container class="text-center">
-    <v-progress-circular indeterminate color="primary" />
-    <p>
-     データを読み込んでいます...<br />
-     わんコメを起動し、プラグインから<br />
-     「おみくじBOTプラグイン」を有効にしてください<br />
-     <br />
-     困ったら、こちらのページを見てね。<br />
-     こちらからダウンロード
-    </p>
-   </v-container>
+   <PartsAppEditorLoading />
   </template>
   <template v-else>
+   <!-- ヘッダー -->
    <AppHeader :Omiken="AppEditor.Omiken" />
+   <!-- 左端のナビゲーション -->
    <AppNavigation v-model:naviCategory="naviCategory" :AppEditor="AppEditor" @update:category="naviCategory = $event" />
    <v-main>
     <v-container>
+     <!-- アイテムリスト -->
      <AppList
       :AppEditor="AppEditor"
       :categoryActive="naviCategory"
@@ -30,6 +23,7 @@
      />
     </v-container>
    </v-main>
+   <!-- ダイアログ -->
    <AppDialog
     v-model:listEntry="listEntry"
     :Omiken="AppEditor.Omiken"
@@ -45,6 +39,7 @@ import AppHeader from '@/components/AppHeader.vue';
 import AppNavigation from '@/components/AppNavigation.vue';
 import AppList from '@/components/AppList.vue';
 import AppDialog from '@/components/AppDialog.vue';
+import PartsAppEditorLoading from '@/components/common/PartsAppEditorLoading.vue';
 import { useOmikenStore } from '@/composables/FunkOmiken';
 import { FunkUI } from '@/composables/FunkUI';
 import { onMounted } from 'vue';

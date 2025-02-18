@@ -5,17 +5,13 @@ import { RuleCategory } from './OmikenTypes';
 // Threshold(rules,omikuji)
 ///////////////////////////////////
 
-export type ThresholdTypes = ThresholdTypesMap[RuleCategory];
-export type ThresholdTypesMap = {
+export type ThresholdTypesMap<T extends RuleCategory> = {
  comments: CommentThreshold;
  timers: TimerThreshold;
  metas: MetaThreshold;
-};
+}[T];
 
-export type CriterionTypes = CriterionTypesMap[RuleCategory];
-export type CriterionTypesMap = {
- [K in keyof ThresholdTypesMap]: ThresholdTypesMap[K]['criteria'][number];
-};
+export type CriterionTypesMap<T extends RuleCategory> = ThresholdTypesMap<T>['criteria'][number];
 
 // コメント用Threshold
 export interface CommentThreshold {

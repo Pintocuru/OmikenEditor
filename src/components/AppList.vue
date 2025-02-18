@@ -26,43 +26,35 @@ const props = defineProps<{
  categoryActive: CategoryActive;
 }>();
 
-// 子コンポーネントの指定
 const currentListComponent = computed(() => {
- const componentMap: Record<CategoryMain, { component: any; items: any }> = {
-  rules: { component: ListRules, items: getItemsBySub(props.AppEditor, props.categoryActive.sub) },
-  omikujis: { component: ListOmikuji, items: props.AppEditor.Omiken.omikujis },
-  places: { component: ListPlace, items: props.AppEditor.Omiken.places },
-  presets: { component: ListPreset, items: getItemsBySub(props.AppEditor, props.categoryActive.sub) }
- };
-
  return componentMap[props.categoryActive.main] || null;
 });
 
-// サブカテゴリーに基づいてitemsを取得する関数
 const getItemsBySub = (data: AppEditorType, sub?: CategorySub[keyof CategorySub]) => {
- if (!sub) return data;
-
- switch (sub) {
-  case 'comments':
-   return data.Omiken.comments;
-  case 'timers':
-   return data.Omiken.timers;
-  case 'metas':
-   return data.Omiken.metas;
-  case 'Omiken':
-   return data.Presets;
-  case 'Chara':
-   return data.Charas;
-  case 'Script':
-   return data.Scripts;
-  default:
-   return data;
- }
+ return sub ? (subCategoryMap.get(sub)?.(data) ?? data) : data;
 };
+
+// 子コンポーネントの指定
+const componentMap: Record<CategoryMain, { component: any; items: any }> = {
+ rules: { component: ListRules, items: getItemsBySub(props.AppEditor, props.categoryActive.sub) },
+ omikujis: { component: ListOmikuji, items: props.AppEditor.Omiken.omikujis },
+ places: { component: ListPlace, items: props.AppEditor.Omiken.places },
+ presets: { component: ListPreset, items: getItemsBySub(props.AppEditor, props.categoryActive.sub) }
+};
+
+// サブカテゴリーに基づいてitemsを取得する関数
+const subCategoryMap = new Map<CategorySub[CategoryMain], any>([
+ ['comments', (data: AppEditorType) => data.Omiken.comments],
+ ['timers', (data: AppEditorType) => data.Omiken.timers],
+ ['metas', (data: AppEditorType) => data.Omiken.metas],
+ ['Presets', (data: AppEditorType) => data.Presets],
+ ['Charas', (data: AppEditorType) => data.Charas],
+ ['Scripts', (data: AppEditorType) => data.Scripts]
+]);
 
 // コンポーネントのkeyを生成するcomputed
 const getComponentKey = computed(() => {
- const sub = props.categoryActive.sub || 'default';
- return `${props.categoryActive.main}-${sub}-component`;
+ const { main, sub = 'default' } = props.categoryActive;
+ return `${main}-${sub}`;
 });
 </script>

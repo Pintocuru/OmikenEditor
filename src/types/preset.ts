@@ -1,6 +1,19 @@
 // src/types/preset.ts
-import { BaseType, OmikenTypeMap, OneCommePostType } from './OmikenTypes';
+import { BaseType, OmikenType, OneCommePostType } from './OmikenTypes';
 import { GameType, PluginStoreType, SelectOmikujiOptions } from './plugin';
+
+// preset全体の型定義
+export type PresetType = {
+ [K in PresetCategory]: Record<string, PresetTypeMap<K>>;
+};
+export type PresetCategory = 'Presets' | 'Charas' | 'Scripts';
+export type PresetTypeMap<T extends PresetCategory> = {
+ Presets: PresetOmikenType; // preset:Omiken
+ Charas: CharaType; // preset:Chara
+ Scripts: ScriptType; // preset:Script
+}[T];
+
+// ---
 
 // presetデータ
 interface PresetBaseType extends BaseType {
@@ -15,22 +28,15 @@ interface PresetBaseType extends BaseType {
 
 // ---
 
-export type PresetTypeMap = {
- Presets: Record<string, PresetOmikenType>; // preset:Omiken
- Charas: Record<string, CharaType>; // preset:Chara
- Scripts: Record<string, ScriptsType>; // preset:Script
-};
-export type PresetAnyType = PresetTypeMap[keyof PresetTypeMap];
-
 // おみくじデータ付きpresetデータ
 export interface PresetOmikenType extends PresetBaseType {
- item: OmikenTypeMap;
+ item: OmikenType;
  isOverwrite?: boolean; // 追加方法(true:上書き/false:追加)
 }
 
 // Chara:キャラクターJSONの型定義
 export interface CharaType extends PresetBaseType {
- isIconDisplay: boolean; // アイコンを表示するか
+ isIconDisplay: boolean; // ジェネレーターでアイコンを表示させるか
  displayName?: string; // 読み上げ時の名前の読ませ方
  frameId: string | null; // わんコメの枠
  color: {
@@ -47,26 +53,27 @@ export interface CharaType extends PresetBaseType {
 
 // ---
 
-export interface ScriptsType extends PresetBaseType {
+// Scripts:アドオン用型定義
+export interface ScriptType extends PresetBaseType {
  OmikujiFunc: OmikujiFuncParamType; // おみくじ実行時の関数
  ApiCall?: ApiCallParamType; // API呼び出し時の関数
- settings: Array<ScriptParam<string | number | boolean>>;
- params: Array<ScriptParam<string | number | boolean>>;
- placeholders: Array<ScriptParam<string | number | boolean>>;
+ settings: Array<ScriptParam<ParamType>>;
+ params: Array<ScriptParam<ParamType>>;
+ placeholders: Array<ScriptParam<ParamType>>;
 }
 
 // funcの引数の型定義
 export type OmikujiFuncParamType = (
  options: SelectOmikujiOptions,
  game: GameType,
- settings: Array<ScriptParam<string | number | boolean>>,
- params: Array<ScriptParam<string | number | boolean>>
+ settings: Array<ScriptParam<ParamType>>,
+ params: Array<ScriptParam<ParamType>>
 ) => OmikujiFuncReturnType;
 
 // funcの返り値
 export interface OmikujiFuncReturnType {
  postArray?: OneCommePostType[];
- placeholder: { [id: string]: string | number };
+ placeholder: Record<string, string | number>;
  game: GameType;
 }
 
@@ -85,7 +92,9 @@ export interface ApiCallReturnType {
 }
 
 // gameのパラメータ設定用
-export interface ScriptParam<T> extends BaseType {
- type: 'string' | 'number' | 'boolean';
- value: T;
+
+type ParamType = 'string' | 'number' | 'boolean'; // 型エイリアス
+export interface ScriptParam<T extends ParamType> extends BaseType {
+ type: T;
+ value: T extends 'string' ? string : T extends 'number' ? number : boolean;
 }

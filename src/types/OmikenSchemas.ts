@@ -62,7 +62,7 @@ const ScriptParamSchema = z
  );
 
 // 共通部分のスキーマ
-export const CommonRuleSchema = z.object({
+const CommonRuleSchema = z.object({
  ...baseSchema.shape,
  isValid: z.boolean().default(true).catch(true),
  order: z.number().int().nonnegative().default(0).catch(0),

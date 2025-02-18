@@ -12,7 +12,7 @@
    <v-fab-transition>
     <div v-if="getEditComponent" :key="generateUniqueKey(category, entry.key)">
      <component
-      :is="getEditComponent(category, entry.mode)"
+      :is="getEditComponent(category)"
       :entry="entry"
       @update:Omiken="updateOmiken"
       @open-editor="openEditor"
@@ -53,51 +53,40 @@
 </template>
 
 <script setup lang="ts">
-import { ListEntry, ListCategory, OmikenEntry, ListEntryCollect, OmikenType } from '@type';
+import { ListEntry, ListEntryCollect, OmikenCategory, OmikenType } from '@type';
 import DialogOmikuji from '@/components/DialogOmikuji/DialogOmikuji.vue';
 import DialogPlace from '@/components/DialogPlace/DialogPlace.vue';
 import { FunkEmits } from '@/composables/FunkEmits';
 
 // Props / emit
 const props = defineProps<{
- listEntry: ListEntryCollect;
+ listEntry: { [K in OmikenCategory]: ListEntry<K> };
  Omiken: OmikenType;
 }>();
 
-const emit = defineEmits<{
- (e: 'update:listEntry', newEntry: ListEntryCollect): void;
- (e: 'update:Omiken', payload: OmikenEntry<ListCategory>): void;
- (e: 'open-editor', editorItem: ListEntry<ListCategory>): void;
-}>();
-
 // コンポーザブル:FunkEmits
-const { updateOmiken, openEditor } = FunkEmits(emit);
+const { updateOmiken, openEditor } = FunkEmits();
 
 // エディターコンポーネントを取得する関数
-const getEditComponent = (type: ListCategory, mode?: string | null) => {
- const editorMap: Record<ListCategory, any> = {
-  types: null,
-  rules: null,
-  omikujis: DialogOmikuji,
-  places: DialogPlace
- };
- return editorMap[type] || null;
+const editorMap: Record<OmikenCategory, any> = {
+ comments: null,
+ timers: null,
+ metas: null,
+ omikujis: DialogOmikuji,
+ places: DialogPlace
 };
+const getEditComponent = (type: OmikenCategory) => editorMap[type] || null;
 
 // 同じ種類のアイテムリストを取得
-const getSiblingItems = (category: ListCategory, currentKey: string) => {
- if (category === 'types') {
-  return [];
- } else {
-  const items = Object.keys(props.Omiken[category]).sort((a, b) =>
-   props.Omiken[category][a].name.localeCompare(props.Omiken[category][b].name)
-  );
-  return items;
- }
+const getSiblingItems = (category: OmikenCategory, currentKey: string) => {
+ const items = Object.keys(props.Omiken[category]).sort((a, b) =>
+  props.Omiken[category][a].name.localeCompare(props.Omiken[category][b].name)
+ );
+ return items;
 };
 
 // 前または次のアイテムのキーを取得（循環）
-const getSiblingKey = (category: ListCategory, currentKey: string, direction: 'prev' | 'next') => {
+const getSiblingKey = (category: OmikenCategory, currentKey: string, direction: 'prev' | 'next') => {
  const items = getSiblingItems(category, currentKey);
  if (items.length <= 1) return null;
 
@@ -110,11 +99,11 @@ const getSiblingKey = (category: ListCategory, currentKey: string, direction: 'p
 };
 
 // アイテムの名前を取得
-const getSiblingName = (category: ListCategory, currentKey: string, direction: 'prev' | 'next') =>
- category === 'types' ? '' : props.Omiken[category][getSiblingKey(category, currentKey, direction) || '']?.name || '';
+const getSiblingName = (category: OmikenCategory, currentKey: string, direction: 'prev' | 'next') =>
+ props.Omiken[category][getSiblingKey(category, currentKey, direction) || '']?.name || '';
 
 // アイテム間移動（修正版）
-const navigateToItem = (category: ListCategory, currentKey: string, direction: 'prev' | 'next') => {
+const navigateToItem = (category: OmikenCategory, currentKey: string, direction: 'prev' | 'next') => {
  const nextKey = getSiblingKey(category, currentKey, direction);
  if (nextKey) {
   updateDialog(category, false);
@@ -127,7 +116,7 @@ const navigateToItem = (category: ListCategory, currentKey: string, direction: '
  }
 };
 
-const generateUniqueKey = (category: ListCategory, key: string | string[] | null) => {
+const generateUniqueKey = (category: OmikenCategory, key: string | string[] | null) => {
  // `category` と `key` を基にユニークなキーを生成
  if (Array.isArray(key)) {
   return `${category}-${key.join('-')}`;
@@ -136,7 +125,7 @@ const generateUniqueKey = (category: ListCategory, key: string | string[] | null
 };
 
 // ダイアログの状態更新
-const updateDialog = (key: ListCategory, isOpen: boolean) => {
+const updateDialog = (key: OmikenCategory, isOpen: boolean) => {
  emit('update:listEntry', {
   ...props.listEntry,
   [key]: { ...props.listEntry[key], isOpen }

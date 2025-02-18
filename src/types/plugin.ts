@@ -1,6 +1,6 @@
 // src/types/plugin.ts
 import { OmikenType, OmikujiType } from './Omiken';
-import { CharaType, ScriptParam, ScriptsType } from './preset';
+import { CharaType, ScriptParam, ScriptType } from './preset';
 import { Service, ServiceMeta } from '@onecomme.com/onesdk/types/Service';
 import { BaseResponse } from '@onecomme.com/onesdk/types/BaseResponse';
 import { Colors, Comment } from '@onecomme.com/onesdk/types/Comment';
@@ -20,7 +20,7 @@ export interface PluginStoreType {
 export interface PluginMainType extends PluginStoreType {
  store: any; // ElectronStore不具合のためany ElectronStore<StoreType>
  Charas: Record<string, CharaType>;
- Scripts: Record<string, ScriptsType>;
+ Scripts: Record<string, ScriptType>;
  TimeConfig: TimeConfigType;
 }
 
@@ -29,7 +29,7 @@ export interface PluginApiType extends PluginStoreType {
  store: any; // ElectronStore不具合のためany ElectronStore<StoreType>
  Presets: Record<string, OmikenType>;
  Charas: Record<string, CharaType>;
- Scripts: Record<string, ScriptsType>;
+ Scripts: Record<string, ScriptType>;
 }
 
 // 全体設定用の型

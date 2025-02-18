@@ -1,19 +1,19 @@
 // src/composables/FunkOmikuji.ts
-
 import { computed, inject, Ref } from 'vue';
 import { AppEditorType, OneCommePostType } from '@type';
+import { useOmikenStore } from './FunkOmiken';
 
 export function FunkOmikuji() {
- // Inject
- const AppEditor = inject<Ref<AppEditorType>>('AppEditorKey');
- const Chara = AppEditor?.value.Charas;
- const places = computed(() => AppEditor?.value.Omiken.places ?? {});
+ // piniaの宣言
+ const omikenStore = useOmikenStore();
+ const Charas = computed(() => omikenStore.AppEditor?.Charas ?? {});
+ const places = computed(() => omikenStore.AppEditor?.Omiken.places ?? {});
 
  const POST_TYPES: Record<PostTypeKey, { color: string; label: string }> = {
   onecomme: { color: 'orange', label: 'わんコメ' },
   party: { color: 'deep-orange', label: 'WordParty' },
   speech: { color: 'green', label: 'スピーチ' },
-  error: { color: 'red', label: 'システムエラー' }
+  system: { color: 'red', label: 'システム(コメントテスター)' }
  };
 
  // 投稿タイプに応じた色を取得する関数
@@ -27,7 +27,7 @@ export function FunkOmikuji() {
  }));
 
  // キャラクター関連の投稿タイプかどうかを判定
- const isCharacterPost = (type: string): boolean => ['onecomme', 'toast'].includes(type);
+ const isCharacterPost = (type: string): boolean => ['onecomme'].includes(type);
 
  // ポストの色を取得
  const getPostColor = (post: OneCommePostType): string => {
@@ -35,16 +35,16 @@ export function FunkOmikuji() {
  };
 
  // キャラクター一覧の作成
-const botKeyItems = computed(() => {
- if (!Chara || typeof Chara !== 'object') return [];
- return Object.entries(Chara)
-  .map(([key, chara]) => ({
-   text: chara.name,
-   value: key,
-   order: chara.order ?? Infinity // orderがない場合はInfinityを設定
-  }))
-  .sort((a, b) => a.order - b.order); // orderで昇順にソート
-});
+ const botKeyItems = computed(() => {
+  if (!Charas || typeof Charas !== 'object') return [];
+  return Object.entries(Charas)
+   .map(([key, chara]) => ({
+    text: chara.name,
+    value: key,
+    order: chara.order ?? Infinity // orderがない場合はInfinityを設定
+   }))
+   .sort((a, b) => a.order - b.order); // orderで昇順にソート
+ });
 
  // postからonecommeを探し色を取得する
  const getPostTypeColor = (post: OneCommePostType[], isBotColor?: boolean): string => {
@@ -72,8 +72,8 @@ const botKeyItems = computed(() => {
 
  // アイコンキーアイテムの取得
  const getIconKeyItems = (botKey: string | undefined) => {
-  if (!botKey || !Chara || !(botKey in Chara)) return [];
-  return Object.keys(Chara[botKey].image).map((key) => ({
+  if (!botKey || !Charas || !(botKey in Charas)) return [];
+  return Object.keys(Charas.value[botKey].image).map((key) => ({
    text: key,
    value: key
   }));
@@ -81,15 +81,15 @@ const botKeyItems = computed(() => {
 
  // キャラクターの背景色を取得する関数
  const getCharaColor = (botKey: string | undefined): string => {
-  if (!botKey || !Chara || !Chara[botKey]) return '';
-  return Chara[botKey].color['--lcv-background-color'];
+  if (!botKey || !Charas || !Charas.value[botKey]) return '';
+  return Charas.value[botKey].color['--lcv-background-color'];
  };
 
  // キャラクターの画像を取得する関数
  const getCharaImage = (post: OneCommePostType): string => {
-  if (!post.botKey || !post.iconKey || !Chara || !Chara[post.botKey]) return '';
-    const basePath = process.env.NODE_ENV === 'development' ? './Charas' : './Charas';
-    return `${basePath}/${Chara[post.botKey].image[post.iconKey]}`;
+  if (!post.botKey || !post.iconKey || !Charas || !Charas.value[post.botKey]) return '';
+  const basePath = './Charas';
+  return `${basePath}/${Charas.value[post.botKey].image[post.iconKey]}`;
  };
 
  //---

@@ -14,12 +14,12 @@
 </template>
 
 <script setup lang="ts">
-import { ListCategory, ListEntry, OmikujiType, OmikenEntry, AppEditorType, ScriptsType } from '@type';
+import { ListCategory, ListEntry, OmikujiType, OmikenEntry, AppEditorType, ScriptType } from '@type';
 import { FunkEmits } from '@/composables/FunkEmits';
 
 const props = defineProps<{
  currentItem: OmikujiType;
- modelValue: "places" | "post" | "threshold" | "status" | "scripts";
+ modelValue: 'places' | 'post' | 'threshold' | 'status' | 'scripts';
 }>();
 
 const emit = defineEmits<{

@@ -7,38 +7,26 @@
     <!-- タイトルバーと操作ボタン -->
     <v-toolbar density="compact" :color="getPostTypeColor(omikuji.post, true)">
      <v-toolbar-title @click="openEditorItem('omikujis', omikuji.id)">
-      <span v-if="omikuji?.threshold.length !== 0">🔐</span>
       {{ omikuji.name }}
      </v-toolbar-title>
      <template #append>
-      <PartsArrayAction
-       editMode="omikujiAdd"
-       :entry="omikuji"
-       @edit="openEditorItem('omikujis', omikuji.id)"
-       @update:Omiken="updateOmiken"
-      />
+      <!-- 右端のボタン -->
+      <PartsArrayAction editMode="omikujiAdd" :entry="omikuji" />
      </template>
     </v-toolbar>
-
     <!-- おみくじ内容 -->
     <v-card-text class="py-4">
      <div class="pb-3" v-if="omikuji.post">
       {{ getOnecommeContent(omikuji.post) }}
      </div>
-
-     <div class="list-group d-flex flex-wrap">
-      <!-- 発動条件の表示 -->
-      <v-chip v-if="omikuji?.threshold.length !== 0" density="compact" variant="outlined" color="yellow lighten-3">
-       🔐 {{ getExampleText(omikuji.threshold) }}
-      </v-chip>
-     </div>
+     <div class="list-group d-flex flex-wrap"></div>
     </v-card-text>
    </v-card>
   </v-col>
  </v-row>
 
  <v-sheet>
-  <v-btn block @click="addItem('omikujis')" color="primary" variant="flat" class="mt-6">
+  <v-btn block @click="addItem()" color="primary" variant="flat" class="mt-6">
    <v-icon left>mdi-plus</v-icon> 🥠 おみくじの追加
   </v-btn>
  </v-sheet>
@@ -46,28 +34,23 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { ListCategory, ListEntry, OmikenEntry, CategoryActive, AppEditorType, OmikujiType } from '@type';
+import { CategoryActive, OmikujiType } from '@type';
 import PartsArrayAction from '@/components/common/PartsArrayAction.vue';
 import { FunkOmikuji } from '@/composables/FunkOmikuji';
-import { FunkThreshold } from '@/composables/FunkThreshold';
 import { FunkEmits } from '@/composables/FunkEmits';
+import { useOmikenStore } from '@/composables/FunkOmiken';
 
 const props = defineProps<{
  items: Record<string, OmikujiType>;
  categoryActive: CategoryActive;
 }>();
 
-const emit = defineEmits<{
- (e: 'update:Omiken', payload: OmikenEntry<ListCategory>): void;
- (e: 'open-editor', editorItem: ListEntry<ListCategory>): void;
-}>();
-
+// piniaの宣言
+const omikenStore = useOmikenStore();
 // コンポーザブル:FunkEmits
-const { updateOmiken, openEditorItem } = FunkEmits(emit);
+const { updateOmiken, openEditorItem } = FunkEmits();
 // コンポーザブル:FunkOmikuji
 const { getOnecommeContent, getPostTypeColor } = FunkOmikuji();
-// コンポーザブル:FunkThreshold
-const { getExampleText } = FunkThreshold();
 
 // omikujisをソート
 const omikujisNameSort = computed(() => {
@@ -77,7 +60,7 @@ const omikujisNameSort = computed(() => {
 });
 
 // アイテムを追加
-const addItem = (type: ListCategory) => {
- emit('update:Omiken', { type, addKeys: [{ name: '新しいおみくじ' }] });
+const addItem = () => {
+ omikenStore.updateOmiken({ type: 'omikujis', addKeys: [{ name: '新しいおみくじ' }] });
 };
 </script>

@@ -1,21 +1,21 @@
 // src/types/editor.ts
-import { OmikenCategory, OmikenType, OmikenTypeMap } from './OmikenZod';
-import { PresetTypeMap } from './preset';
+import { OmikenCategory, OmikenType, OmikenTypeMap, RuleCategory } from './OmikenZod';
+import { PresetCategory, PresetType } from './preset';
 
 // エディター用型定義
 
 // AppEditor
-export type AppEditorType = PresetTypeMap & {
+export type AppEditorType = PresetType & {
  Omiken: OmikenType;
 };
 
 // メインカテゴリーの型
 export type CategoryMain = 'rules' | 'omikujis' | 'places' | 'presets';
 export type CategorySub = {
- rules: 'comments' | 'timers' | 'metas';
+ rules: RuleCategory;
  omikujis: never;
  places: never;
- presets: 'Omiken' | 'Chara' | 'Script';
+ presets: PresetCategory;
 };
 export type CategoryActive<T extends CategoryMain = CategoryMain> = {
  main: T; // 現在選択されているメインカテゴリー
@@ -23,14 +23,13 @@ export type CategoryActive<T extends CategoryMain = CategoryMain> = {
 };
 
 // リスト用カテゴリー
-export type ListType = OmikenType[OmikenCategory];
 export type ListEntry<T extends OmikenCategory> = {
  type: T;
  isOpen: boolean; // ダイアログの開閉状態
  mode: string | null; // 表示モード
  key: string | string[] | null;
 };
-// listEntry全体の型
+// listEntry全体の型(TODO:不要)
 export type ListEntryCollect = {
  [K in OmikenCategory]: ListEntry<K>;
 };
