@@ -21,7 +21,7 @@
 
 <script setup lang="ts">
 import { ref, PropType, computed } from 'vue';
-import { OmikenEntry, ListCategory, OmikenTypeMap, OmikujiType, PlaceType, RulesType } from '@type';
+import { OmikenEntry, ListCategory, OmikenType, OmikujiType, PlaceType, RulesType } from '@type';
 import { FunkEmits } from '@/composables/FunkEmits';
 import { FunkTypes } from '@/composables/FunkTypes';
 

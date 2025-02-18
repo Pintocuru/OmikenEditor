@@ -132,7 +132,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { ListEntry, OmikenTypeMap, OmikenEntry, OmikujiType, RulesType } from '@type';
+import { ListEntry, OmikenType, OmikenEntry, OmikujiType, RulesType } from '@type';
 import PartsArrayAction from '@/components/common/PartsArrayAction.vue';
 import { FunkRules } from '@/composables/FunkRules';
 import { FunkOmikuji } from '@/composables/FunkOmikuji';

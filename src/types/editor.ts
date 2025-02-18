@@ -1,12 +1,12 @@
 // src/types/editor.ts
-import { OmikenCategory, OmikenTypeMap } from './OmikenZod';
+import { OmikenCategory, OmikenType, OmikenTypeMap } from './OmikenZod';
 import { PresetTypeMap } from './preset';
 
 // エディター用型定義
 
 // AppEditor
 export type AppEditorType = PresetTypeMap & {
- Omiken: OmikenTypeMap;
+ Omiken: OmikenType;
 };
 
 // メインカテゴリーの型
@@ -23,7 +23,7 @@ export type CategoryActive<T extends CategoryMain = CategoryMain> = {
 };
 
 // リスト用カテゴリー
-export type ListType = OmikenTypeMap[OmikenCategory];
+export type ListType = OmikenType[OmikenCategory];
 export type ListEntry<T extends OmikenCategory> = {
  type: T;
  isOpen: boolean; // ダイアログの開閉状態
@@ -38,7 +38,7 @@ export type ListEntryCollect = {
 // ファイル操作用
 export type OmikenEntry<T extends OmikenCategory> = {
  type: T;
- updates?: OmikenTypeMap[T][];
- addKeys?: Partial<OmikenTypeMap[T][string]>[];
+ updates?: OmikenTypeMap<T>[];
+ addKeys?: Partial<OmikenTypeMap<T>>[];
  delKeys?: string[];
 };

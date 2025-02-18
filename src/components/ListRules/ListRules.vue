@@ -32,7 +32,7 @@
 
   <v-expand-transition>
    <div v-show="uiState.expandedPanels.includes(rule.id)">
-    <ListRulesTabs :rule="rule" @showWeightEdit="isWeightEdit" />
+    <ListRulesTabs :rule="rule" :category="categoryActive.sub" @showWeightEdit="isWeightEdit" />
 
     <v-card-text>
      <v-row>
@@ -51,7 +51,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { CategoryActive, RulesTypeMap, OmikenTypeMap, RulesType } from '@type';
+import { CategoryActive, RulesTypeMap, OmikenType, RulesType, OmikenTypeMap, RuleCategory } from '@type';
 import PartsArrayAction from '@/components/common/PartsArrayAction.vue';
 import DialogTypes from '@/components/DialogTypes.vue';
 import ListRulesOmikujiView from '@/components/ListRules/ListRulesOmikujis.vue';
@@ -92,9 +92,9 @@ const isWeightEdit = (showWeightEditor: boolean) => {
 };
 
 // ルールの色を更新
-const updateRuleColor = <T extends keyof RulesTypeMap>(rule: RulesTypeMap[T], color: string, category: T) => {
- const updatedRule = { ...rule, color } as unknown as OmikenTypeMap[T];
- updateOmikenEntry(category, updatedRule);
+const updateRuleColor = <T extends RuleCategory>(rule: RulesTypeMap<T>, color: string, category: T) => {
+ const updated: RulesTypeMap<T> = { ...rule, color };
+ updateOmikenEntry<T>(category, updated);
 };
 
 // アイテムの追加

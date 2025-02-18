@@ -1,10 +1,10 @@
 // composables/FunkOmikenUpdater.ts
-import { OmikenTypeMap, ListCategory, OmikenTypeMap, OmikenSchema, PresetOmikenType } from '@type';
+import { OmikenType, ListCategory, OmikenType, OmikenSchema, PresetOmikenType } from '@type';
 import { OmikenEntryValidate } from '@/composables/FunkValidate';
 
 export function FunkOmikenUpdater() {
  // 更新処理
- const handleUpdate = <T extends ListCategory>(state: OmikenTypeMap, type: T, update: OmikenTypeMap[T]) => {
+ const handleUpdate = <T extends ListCategory>(state: OmikenType, type: T, update: OmikenType[T]) => {
   const { resolvedId, originalId } = resolveIdConflict(state[type], update);
   const updatedItem = { ...update, id: resolvedId };
 
@@ -19,23 +19,23 @@ export function FunkOmikenUpdater() {
  };
 
  // 追加処理
- const handleAddItems = <T extends ListCategory>(state: OmikenTypeMap, type: T, addKey: Partial<OmikenTypeMap[T]>) => {
+ const handleAddItems = <T extends ListCategory>(state: OmikenType, type: T, addKey: Partial<OmikenType[T]>) => {
   const newItem = OmikenEntryValidate(type, addKey);
   state[type][newItem.id] = newItem;
  };
 
  // 削除処理
- const handleDeleteItems = <T extends ListCategory>(state: OmikenTypeMap, type: T, delKey: string) => {
+ const handleDeleteItems = <T extends ListCategory>(state: OmikenType, type: T, delKey: string) => {
   delete state[type][delKey];
  };
 
  // プリセット処理
- const handlePresetUpdate = (state: OmikenTypeMap, presetRaw: PresetOmikenType): OmikenTypeMap => {
+ const handlePresetUpdate = (state: OmikenType, presetRaw: PresetOmikenType): OmikenType => {
   const { item, isOverwrite = false } = presetRaw;
-  const preset = OmikenSchema.parse(item) as OmikenTypeMap;
+  const preset = OmikenSchema.parse(item) as OmikenType;
   const updatedState = { ...state };
 
-  (Object.keys(state) as (keyof OmikenTypeMap)[]).forEach((category) => {
+  (Object.keys(state) as (keyof OmikenType)[]).forEach((category) => {
    if (isOverwrite) {
     // 上書きモードの場合は、プリセットのデータをそのまま使用
     // @ts-ignore
@@ -50,10 +50,10 @@ export function FunkOmikenUpdater() {
   return updatedState;
  };
 
- const processItemsWithIdCheck = <K extends keyof OmikenTypeMap>(
-  current: OmikenTypeMap[K],
-  preset: OmikenTypeMap[K]
- ): OmikenTypeMap[K] => {
+ const processItemsWithIdCheck = <K extends keyof OmikenType>(
+  current: OmikenType[K],
+  preset: OmikenType[K]
+ ): OmikenType[K] => {
   const result = { ...current };
   const existingIds = new Set(Object.values(current).map((item) => item.id));
 
@@ -77,8 +77,8 @@ export function FunkOmikenUpdater() {
 
  // ID重複チェックと解決のための関数
  const resolveIdConflict = <T extends ListCategory>(
-  state: OmikenTypeMap[T],
-  item: OmikenTypeMap[T]
+  state: OmikenType[T],
+  item: OmikenType[T]
  ): {
   resolvedId: string;
   originalId: string | undefined;

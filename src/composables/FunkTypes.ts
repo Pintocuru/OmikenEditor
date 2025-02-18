@@ -1,5 +1,5 @@
 // src/composables/FunkTypes.ts
-import { AppEditorType, ListCategory, OmikenTypeMap, OmikujiType, PlaceType, RulesType, TypesType } from '@type';
+import { AppEditorType, ListCategory, OmikenType, OmikujiType, PlaceType, RulesType, TypesType } from '@type';
 import { computed, inject, Ref } from 'vue';
 
 // タイプの説明マップ
@@ -65,7 +65,7 @@ export function FunkTypes() {
  function isListType<K extends ListCategory>(
   obj: unknown,
   category: K
- ): obj is OmikenTypeMap[K] | Record<string, OmikenTypeMap[K]> {
+ ): obj is OmikenType[K] | Record<string, OmikenType[K]> {
   if (!obj || typeof obj !== 'object') return false;
 
   if (category === 'rules') {

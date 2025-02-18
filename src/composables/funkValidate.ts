@@ -1,11 +1,11 @@
 // src/composables/funkValidate.ts
 import {
- OmikenTypeMap,
+ OmikenType,
  ThresholdType,
  OmikujiType,
  PlaceType,
  ListCategory,
- OmikenTypeMap,
+ OmikenType,
  OmikenRulesType,
  CommentRulesType,
  TimerRulesType,
@@ -25,8 +25,8 @@ import { z } from 'zod';
 // ---
 
 // データadd用バリデーション
-export const OmikenEntryValidate = <T extends ListCategory>(type: T, data: unknown): OmikenTypeMap[T] => {
- const schemas: Record<keyof OmikenTypeMap, z.ZodType> = {
+export const OmikenEntryValidate = <T extends ListCategory>(type: T, data: unknown): OmikenType[T] => {
+ const schemas: Record<keyof OmikenType, z.ZodType> = {
   comments: CommentRulesSchema,
   timers: TimerRulesSchema,
   metas: MetaRulesSchema,
@@ -42,7 +42,7 @@ export const OmikenEntryValidate = <T extends ListCategory>(type: T, data: unkno
 };
 
 // メインのバリデーション関数
-export function OmikenValidate(data: Partial<OmikenTypeMap>): OmikenTypeMap {
+export function OmikenValidate(data: Partial<OmikenType>): OmikenType {
  try {
   // バリデーション
   const places = OmikenPlacesValidate(data.places);
@@ -54,7 +54,7 @@ export function OmikenValidate(data: Partial<OmikenTypeMap>): OmikenTypeMap {
   return { comments, timers, metas, omikujis, places };
  } catch (error) {
   console.error('Omiken validation failed:', error);
-  return OmikenSchema.parse({}) as OmikenTypeMap;
+  return OmikenSchema.parse({}) as OmikenType;
  }
 }
 

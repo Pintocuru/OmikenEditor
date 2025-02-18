@@ -11,14 +11,14 @@
   <!-- 共通:有効リスト -->
   <v-tabs-window-item value="list">
    <v-select
-    v-model="rule.enableIds"
+    v-model="rule.enables"
     :items="omikujiLists"
     label="有効にするおみくじ"
     chips
     multiple
     item-title="name"
     item-value="id"
-    @update:model-value="updateOmikenEntry('rules', { ...rule, enableIds: $event })"
+    @update:model-value="updateOmikenEntry(category, { ...rule, enables: $event })"
    />
   </v-tabs-window-item>
 
@@ -73,25 +73,22 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import { OmikenEntry, ListCategory, ListEntry, RulesType, TypesType } from '@type';
+import { OmikenEntry, RulesType, RuleCategory } from '@type';
 import ThresholdMain from '@/components/DialogThreshold/DialogThreshold.vue';
 import { FunkEmits } from '@/composables/FunkEmits';
-import { FunkTypes } from '@/composables/FunkTypes';
 import { FunkRules } from '@/composables/FunkRules';
 
 const props = defineProps<{
  rule: RulesType;
+ category: RuleCategory;
 }>();
 //
 const emit = defineEmits<{
- (e: 'update:Omiken', payload: OmikenEntry<ListCategory>): void;
- (e: 'open-editor', editorItem: ListEntry<ListCategory>): void;
  (e: 'showWeightEdit', showWeightEdit: boolean): void;
 }>();
 
 // コンポーザブル:FunkEmits
-const { updateOmiken, updateOmikenEntry } = FunkEmits(emit);
-const { findType } = FunkTypes();
+const { updateOmiken, updateOmikenEntry } = FunkEmits();
 const { omikujiLists } = FunkRules();
 
 // タブ
@@ -103,20 +100,18 @@ const baseTabs = [
 
 // typeに応じたタブを返すcomputed
 const tabs = computed(() => {
- const type = findType.value(props.rule) as TypesType;
  let additionalTabs = [] as any;
-
- switch (type) {
-  case 'comment':
+ switch (props.category) {
+  case 'comments':
    additionalTabs = [
     { value: 'threshold', icon: 'mdi-tune', label: '条件設定' }
     // { value: 'scripts', icon: 'mdi-script-text', label: 'スクリプト' }
    ];
    break;
-  case 'timer':
+  case 'timers':
    additionalTabs = [{ value: 'timer', icon: 'mdi-timer', label: 'タイマー設定' }];
    break;
-  case 'meta':
+  case 'metas':
    additionalTabs = [{ value: 'meta', icon: 'mdi-information', label: '枠情報設定' }];
    break;
   case 'waitingList':
@@ -138,7 +133,7 @@ function updateTimerConfig(key: 'minutes' | 'isBaseZero', value: any) {
  const updatedTimerConfig = props.rule.timerConfig
   ? { ...props.rule.timerConfig, [key]: value }
   : { minutes: 5, isBaseZero: true };
- updateOmikenEntry('rules', { ...props.rule, timerConfig: updatedTimerConfig });
+ updateOmikenEntry(props.category, { ...props.rule, timerConfig: updatedTimerConfig });
 }
 
 watch(
