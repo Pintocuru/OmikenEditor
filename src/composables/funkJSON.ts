@@ -1,8 +1,8 @@
 // src/composables/funkJSON.ts
 import { DataType, Mode, AppEditorType, OmikenType, ParamsType } from '@type';
 import { configs } from '@/config';
-import { MySwal } from '@/components/common/partsMySwal';
-import { OmikenValidate } from '@/composables/FunkValidate';
+import { MySwal } from '@common/partsMySwal';
+import { OmikenValidate } from '@composables/FunkValidate';
 import OneSDK from '@onecomme.com/onesdk';
 
 // Omikenの保存

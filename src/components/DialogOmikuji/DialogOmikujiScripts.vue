@@ -21,7 +21,7 @@
    <v-col cols="12">
     <v-card variant="outlined" class="pa-2 mt-2">
      <div class="text-subtitle-1 mb-2">パラメータ設定</div>
-     
+
      <!-- 通常のパラメータ -->
      <v-row dense>
       <v-col cols="12" sm="6" md="4" lg="3" v-for="param in normalParams" :key="param.id">
@@ -37,15 +37,11 @@
      <v-expand-transition>
       <div v-if="advancedParams.length">
        <v-divider class="my-2" />
-       <v-btn
-        variant="text"
-        @click="showAdvanced = !showAdvanced"
-        class="mb-2"
-       >
+       <v-btn variant="text" @click="showAdvanced = !showAdvanced" class="mb-2">
         詳細設定
         <v-icon right>{{ showAdvanced ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
        </v-btn>
-       
+
        <v-row dense v-show="showAdvanced">
         <v-col cols="12" sm="6" md="4" lg="3" v-for="param in advancedParams" :key="param.id">
          <dialog-omikuji-scripts-field
@@ -65,9 +61,9 @@
 
 <script setup lang="ts">
 import { computed, inject, ref, Ref, watch } from 'vue';
-import { ListCategory, ListEntry, OmikujiType, OmikenEntry, AppEditorType } from '@type';
-import { FunkEmits } from '@/composables/FunkEmits';
-import DialogOmikujiScriptsField from '@/components/DialogOmikuji/DialogOmikujiScriptsField.vue';
+import { OmikenCategory, ListEntryType, OmikujiType, OmikenEntry, AppEditorType } from '@type';
+import { FunkEmits } from '@composables/FunkEmits';
+import DialogOmikujiScriptsField from '@components/DialogOmikuji/DialogOmikujiScriptsField.vue';
 
 const props = defineProps<{
  currentItem: OmikujiType;
@@ -75,8 +71,8 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
- (e: 'update:Omiken', payload: OmikenEntry<ListCategory>): void;
- (e: 'open-editor', editorItem: ListEntry<ListCategory>): void;
+ (e: 'update:Omiken', payload: OmikenEntry<OmikenCategory>): void;
+ (e: 'open-editor', editorItem: ListEntryType<OmikenCategory>): void;
 }>();
 
 // inject
@@ -90,13 +86,9 @@ const { updateOmikenEntry } = FunkEmits(emit);
 const showAdvanced = ref(false);
 
 // 通常パラメータと詳細パラメータを分離
-const normalParams = computed(() => 
- selectedScript.value?.scriptParams?.filter(param => !param.isEver) || []
-);
+const normalParams = computed(() => selectedScript.value?.scriptParams?.filter((param) => !param.isEver) || []);
 
-const advancedParams = computed(() => 
- selectedScript.value?.scriptParams?.filter(param => param.isEver) || []
-);
+const advancedParams = computed(() => selectedScript.value?.scriptParams?.filter((param) => param.isEver) || []);
 
 // スクリプトの選択項目を生成
 const scriptItems = computed(() => {

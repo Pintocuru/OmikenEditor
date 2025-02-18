@@ -12,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-import { saveOmiken } from '@/composables/FunkJSON';
+import { saveOmiken } from '@composables/FunkJSON';
 import { OmikenType } from '@/types/Omiken';
 
 const props = defineProps<{ Omiken: OmikenType }>();

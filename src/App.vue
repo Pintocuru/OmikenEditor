@@ -13,36 +13,24 @@
    <v-main>
     <v-container>
      <!-- アイテムリスト -->
-     <AppList
-      :AppEditor="AppEditor"
-      :categoryActive="naviCategory"
-      @update:Omiken="updateOmiken"
-      @update:OmikenPreset="updateOmikenPresetData"
-      @update:category="naviCategory = $event"
-      @open-editor="openEditor"
-     />
+     <AppList :AppEditor="AppEditor" :categoryActive="naviCategory" />
     </v-container>
    </v-main>
    <!-- ダイアログ -->
-   <AppDialog
-    v-model:listEntry="listEntry"
-    :Omiken="AppEditor.Omiken"
-    @update:Omiken="updateOmiken"
-    @open-editor="openEditor"
-   />
+   <AppDialog :Omiken="AppEditor.Omiken" />
   </template>
  </v-app>
 </template>
 
 <script setup lang="ts">
-import AppHeader from '@/components/AppHeader.vue';
-import AppNavigation from '@/components/AppNavigation.vue';
-import AppList from '@/components/AppList.vue';
-import AppDialog from '@/components/AppDialog.vue';
-import PartsAppEditorLoading from '@/components/common/PartsAppEditorLoading.vue';
-import { useOmikenStore } from '@/composables/FunkOmiken';
-import { FunkUI } from '@/composables/FunkUI';
 import { onMounted } from 'vue';
+import AppHeader from '@components/AppHeader.vue';
+import AppNavigation from '@components/AppNavigation.vue';
+import AppList from '@components/AppList.vue';
+import AppDialog from '@components/AppDialog.vue';
+import PartsAppEditorLoading from '@common/PartsAppEditorLoading.vue';
+import { FunkUI } from '@composables/FunkUI';
+import { useOmikenStore } from './store/UseOmikenStore';
 
 const { naviCategory, listEntry, openEditor } = FunkUI();
 

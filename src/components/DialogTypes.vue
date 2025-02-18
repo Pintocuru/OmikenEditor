@@ -64,9 +64,9 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import { OmikenEntry, ListCategory, ListEntry, TypesType, OmikenType, RulesType } from '@type';
-import { FunkEmits } from '@/composables/FunkEmits';
-import { FunkTypes } from '@/composables/FunkTypes';
+import { OmikenEntry, OmikenCategory, ListEntryType, TypesType, OmikenType, RulesType } from '@type';
+import { FunkEmits } from '@composables/FunkEmits';
+import { FunkTypes } from '@composables/FunkTypes';
 import Draggable from 'vuedraggable';
 
 const props = defineProps<{
@@ -75,8 +75,8 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
- (e: 'update:Omiken', payload: OmikenEntry<ListCategory>): void;
- (e: 'open-editor', editorItem: ListEntry<ListCategory>): void;
+ (e: 'update:Omiken', payload: OmikenEntry<OmikenCategory>): void;
+ (e: 'open-editor', editorItem: ListEntryType<OmikenCategory>): void;
 }>();
 
 // コンポーザブル:FunkEmits

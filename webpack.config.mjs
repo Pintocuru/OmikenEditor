@@ -23,8 +23,12 @@ export default {
  resolve: {
   extensions: ['.ts', '.js', '.vue', '.json'], // 拡張子の省略
   alias: {
-   '@': fileURLToPath(new URL('./src', import.meta.url)),
    '@type': fileURLToPath(new URL('./src/type.ts', import.meta.url)),
+   '@': fileURLToPath(new URL('./src', import.meta.url)),
+   '@common': fileURLToPath(new URL('./src/common', import.meta.url)),
+   '@components': fileURLToPath(new URL('./src/components', import.meta.url)),
+   '@composables': fileURLToPath(new URL('./src/composables', import.meta.url)),
+   '@store': fileURLToPath(new URL('./src/store', import.meta.url)),
    vue: '@vue/runtime-dom'
   }
  },

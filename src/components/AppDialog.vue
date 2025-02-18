@@ -53,17 +53,19 @@
 </template>
 
 <script setup lang="ts">
-import { ListEntry, ListEntryCollect, OmikenCategory, OmikenType } from '@type';
-import DialogOmikuji from '@/components/DialogOmikuji/DialogOmikuji.vue';
-import DialogPlace from '@/components/DialogPlace/DialogPlace.vue';
-import { FunkEmits } from '@/composables/FunkEmits';
+import { ListEntryType, OmikenCategory, OmikenType } from '@type';
+import DialogOmikuji from '@components/DialogOmikuji/DialogOmikuji.vue';
+import DialogPlace from '@components/DialogPlace/DialogPlace.vue';
+import { FunkEmits } from '@composables/FunkEmits';
+import { UseUIStore } from '@/store/UseUIStore';
 
 // Props / emit
 const props = defineProps<{
- listEntry: { [K in OmikenCategory]: ListEntry<K> };
  Omiken: OmikenType;
 }>();
 
+// pinia:UseUIStore
+const UIStore = UseUIStore();
 // コンポーザブル:FunkEmits
 const { updateOmiken, openEditor } = FunkEmits();
 
@@ -103,7 +105,7 @@ const getSiblingName = (category: OmikenCategory, currentKey: string, direction:
  props.Omiken[category][getSiblingKey(category, currentKey, direction) || '']?.name || '';
 
 // アイテム間移動（修正版）
-const navigateToItem = (category: OmikenCategory, currentKey: string, direction: 'prev' | 'next') => {
+const navigateToItem = (category: 'omikujis' | 'places', currentKey: string, direction: 'prev' | 'next') => {
  const nextKey = getSiblingKey(category, currentKey, direction);
  if (nextKey) {
   updateDialog(category, false);
@@ -125,10 +127,7 @@ const generateUniqueKey = (category: OmikenCategory, key: string | string[] | nu
 };
 
 // ダイアログの状態更新
-const updateDialog = (key: OmikenCategory, isOpen: boolean) => {
- emit('update:listEntry', {
-  ...props.listEntry,
-  [key]: { ...props.listEntry[key], isOpen }
- });
+const updateDialog = (type: 'omikujis' | 'places', isOpen: boolean, id: string | null = null) => {
+ UIStore.updateDialog({ type, id, isOpen });
 };
 </script>

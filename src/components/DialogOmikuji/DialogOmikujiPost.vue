@@ -4,7 +4,7 @@
  <DialogOmikujiPostDescription
   :currentItem="currentItem"
   v-model="tab"
-  @update:modelValue="$emit('update:modelValue',$event)"
+  @update:modelValue="$emit('update:modelValue', $event)"
   @open-editor="openEditor"
  />
 
@@ -187,11 +187,11 @@
 
 <script setup lang="ts">
 import { inject, ref, Ref } from 'vue';
-import { ListCategory, ListEntry, OmikujiType, OmikenEntry, OneCommePostType, AppEditorType } from '@type';
-import DialogOmikujiPostDescription from '@/components/DialogOmikuji/DialogOmikujiPostDescription.vue';
-import PartsArrayRemove from '@/components/common/PartsArrayRemove.vue';
-import { FunkOmikuji } from '@/composables/FunkOmikuji';
-import { FunkEmits } from '@/composables/FunkEmits';
+import { OmikenCategory, ListEntryType, OmikujiType, OmikenEntry, OneCommePostType, AppEditorType } from '@type';
+import DialogOmikujiPostDescription from '@components/DialogOmikuji/DialogOmikujiPostDescription.vue';
+import PartsArrayRemove from '@common/PartsArrayRemove.vue';
+import { FunkOmikuji } from '@composables/FunkOmikuji';
+import { FunkEmits } from '@composables/FunkEmits';
 
 const props = defineProps<{
  currentItem: OmikujiType;
@@ -200,8 +200,8 @@ const props = defineProps<{
 
 const emit = defineEmits<{
  (e: 'update:modelValue', value: 'places' | 'post' | 'threshold' | 'status' | 'scripts'): void;
- (e: 'update:Omiken', payload: OmikenEntry<ListCategory>): void;
- (e: 'open-editor', editorItem: ListEntry<ListCategory>): void;
+ (e: 'update:Omiken', payload: OmikenEntry<OmikenCategory>): void;
+ (e: 'open-editor', editorItem: ListEntryType<OmikenCategory>): void;
 }>();
 
 // inject

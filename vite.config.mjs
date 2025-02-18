@@ -21,8 +21,11 @@ export default defineConfig({
  define: { 'process.env': {} },
  resolve: {
   alias: {
-   '@': fileURLToPath(new URL('./src', import.meta.url)),
-   '@type': fileURLToPath(new URL('./src/type.ts', import.meta.url))
+   '@type': fileURLToPath(new URL('./src/type.ts', import.meta.url)),
+   '@common': fileURLToPath(new URL('./src/common', import.meta.url)),
+   '@components': fileURLToPath(new URL('./src/components', import.meta.url)),
+   '@composables': fileURLToPath(new URL('./src/composables', import.meta.url)),
+   '@store': fileURLToPath(new URL('./src/store', import.meta.url))
   },
   extensions: ['.ts', '.js', '.json', '.jsx', '.mjs', '.tsx', '.vue'],
   esbuild: {

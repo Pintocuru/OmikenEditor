@@ -49,25 +49,25 @@
 
 <script setup lang="ts">
 import { computed, inject, Ref, ref } from 'vue';
-import { OmikenEntry, ListEntry, ListCategory, AppEditorType } from '@type';
-import PartsArrayAction from '@/components/common/PartsArrayAction.vue';
-import DialogOmikujiPost from '@/components/DialogOmikuji/DialogOmikujiPost.vue';
-import DialogOmikujiThreshold from '@/components/DialogOmikuji/DialogOmikujiThreshold.vue';
-import DialogOmikujiStatus from '@/components/DialogOmikuji/DialogOmikujiStatus.vue';
-import DialogOmikujiPlaces from '@/components/DialogOmikuji/DialogOmikujiPlaces.vue';
-import DialogOmikujiScripts from '@/components/DialogOmikuji/DialogOmikujiScripts.vue';
-import PartsNameEditor from '@/components/common/PartsNameEditor.vue';
-import { FunkOmikuji } from '@/composables/FunkOmikuji';
-import { FunkEmits } from '@/composables/FunkEmits';
+import { OmikenEntry, ListEntryType, OmikenCategory, AppEditorType } from '@type';
+import PartsArrayAction from '@common/PartsArrayAction.vue';
+import DialogOmikujiPost from '@components/DialogOmikuji/DialogOmikujiPost.vue';
+import DialogOmikujiThreshold from '@components/DialogOmikuji/DialogOmikujiThreshold.vue';
+import DialogOmikujiStatus from '@components/DialogOmikuji/DialogOmikujiStatus.vue';
+import DialogOmikujiPlaces from '@components/DialogOmikuji/DialogOmikujiPlaces.vue';
+import DialogOmikujiScripts from '@components/DialogOmikuji/DialogOmikujiScripts.vue';
+import PartsNameEditor from '@common/PartsNameEditor.vue';
+import { FunkOmikuji } from '@composables/FunkOmikuji';
+import { FunkEmits } from '@composables/FunkEmits';
 
 // props/emits
 const props = defineProps<{
- entry: ListEntry<'omikujis'> | null;
+ entry: ListEntryType<'omikujis'> | null;
 }>();
 
 const emit = defineEmits<{
- (e: 'update:Omiken', payload: OmikenEntry<ListCategory>): void;
- (e: 'open-editor', editorItem: ListEntry<ListCategory>): void;
+ (e: 'update:Omiken', payload: OmikenEntry<OmikenCategory>): void;
+ (e: 'open-editor', editorItem: ListEntryType<OmikenCategory>): void;
 }>();
 
 // inject

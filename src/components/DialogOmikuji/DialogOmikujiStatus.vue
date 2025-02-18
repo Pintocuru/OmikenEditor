@@ -14,8 +14,8 @@
 </template>
 
 <script setup lang="ts">
-import { ListCategory, ListEntry, OmikujiType, OmikenEntry, AppEditorType, ScriptType } from '@type';
-import { FunkEmits } from '@/composables/FunkEmits';
+import { OmikenCategory, ListEntryType, OmikujiType, OmikenEntry, AppEditorType, ScriptType } from '@type';
+import { FunkEmits } from '@composables/FunkEmits';
 
 const props = defineProps<{
  currentItem: OmikujiType;
@@ -23,8 +23,8 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
- (e: 'update:Omiken', payload: OmikenEntry<ListCategory>): void;
- (e: 'open-editor', editorItem: ListEntry<ListCategory>): void;
+ (e: 'update:Omiken', payload: OmikenEntry<OmikenCategory>): void;
+ (e: 'open-editor', editorItem: ListEntryType<OmikenCategory>): void;
 }>();
 
 // コンポーザブル:FunkEmits

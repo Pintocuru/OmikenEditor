@@ -35,10 +35,10 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { CategoryActive, OmikujiType } from '@type';
-import PartsArrayAction from '@/components/common/PartsArrayAction.vue';
-import { FunkOmikuji } from '@/composables/FunkOmikuji';
-import { FunkEmits } from '@/composables/FunkEmits';
-import { useOmikenStore } from '@/composables/FunkOmiken';
+import PartsArrayAction from '@common/PartsArrayAction.vue';
+import { FunkOmikuji } from '@composables/FunkOmikuji';
+import { FunkEmits } from '@composables/FunkEmits';
+import { useOmikenStore } from '@composables/FunkOmiken';
 
 const props = defineProps<{
  items: Record<string, OmikujiType>;

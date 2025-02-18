@@ -132,12 +132,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { ListEntry, OmikenType, OmikenEntry, OmikujiType, RulesType } from '@type';
-import PartsArrayAction from '@/components/common/PartsArrayAction.vue';
-import { FunkRules } from '@/composables/FunkRules';
-import { FunkOmikuji } from '@/composables/FunkOmikuji';
-import { FunkThreshold } from '@/composables/FunkThreshold';
-import { FunkEmits } from '@/composables/FunkEmits';
+import { ListEntryType, OmikenType, OmikenEntry, OmikujiType } from '@type';
+import PartsArrayAction from '@common/PartsArrayAction.vue';
+import { FunkRules } from '@composables/FunkRules';
+import { FunkOmikuji } from '@composables/FunkOmikuji';
+import { FunkThreshold } from '@composables/FunkThreshold';
+import { FunkEmits } from '@composables/FunkEmits';
 import draggable from 'vuedraggable';
 
 const props = defineProps<{
@@ -146,7 +146,7 @@ const props = defineProps<{
 }>();
 
 // コンポーザブル:FunkEmits
-const { updateOmiken, updateOmikenEntry, openEditorItem } = FunkEmits(emit);
+const { updateOmiken, updateOmikenEntry, openEditorItem } = FunkEmits();
 // コンポーザブル:funkRules
 const { weightTotal, weightPercentage, rankCount, rankPositionGet, isAllThresholdEmpty, weightColor } = FunkRules();
 // コンポーザブル:FunkOmikuji

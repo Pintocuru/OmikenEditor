@@ -9,23 +9,33 @@
     "skipLibCheck": true, // ライブラリファイルの型チェックをスキップ
     "jsx": "preserve", // JSXをそのまま残す
     "forceConsistentCasingInFileNames": true, // 大文字小文字を守る
-    "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "src/*"
-      ],
       "@type": [
-        "src/type.ts"
+        "./src/type.ts"
+      ],
+      "@/*": [
+        "./src/*"
+      ],
+      "@common/*": [
+        "./src/common/*"
+      ],
+      "@components/*": [
+        "./src/components/*"
+      ],
+      "@composables/*": [
+        "./src/composables/*"
+      ],
+      "@store/*": [
+        "./src/store/*"
       ]
     }
   },
   // ファイルパス
   "include": [
-    "src/**/*",
+    "src/**/*"
   ],
   // 除外するディレクトリ
   "exclude": [
-    "node_modules",
-    "public"
+    "node_modules"
   ]
 }

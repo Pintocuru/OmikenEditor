@@ -21,7 +21,7 @@
  </v-dialog>
 
  <!-- テキストエディター -->
- <v-btn icon   color="primary" class="me-2" @click="dialog = true">
+ <v-btn icon color="primary" class="me-2" @click="dialog = true">
   <v-icon>mdi-text</v-icon>
   <v-tooltip activator="parent" location="bottom">テキストエディターモード</v-tooltip>
  </v-btn>
@@ -29,15 +29,15 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import type { ListCategory, OmikenEntry, PlaceType, PlaceValueType } from '@type';
-import { FunkEmits } from '@/composables/FunkEmits';
+import type { OmikenCategory, OmikenEntry, PlaceType, PlaceValueType } from '@type';
+import { FunkEmits } from '@composables/FunkEmits';
 
 const props = defineProps<{
  currentItem: PlaceType;
 }>();
 
 const emit = defineEmits<{
- (e: 'update:Omiken', payload: OmikenEntry<ListCategory>): void;
+ (e: 'update:Omiken', payload: OmikenEntry<OmikenCategory>): void;
 }>();
 
 // コンポーザブル:FunkEmits

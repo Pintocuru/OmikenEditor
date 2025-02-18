@@ -1,7 +1,7 @@
 // src/composables/funkUI.ts
 import { Ref, ref } from 'vue';
-import { CategoryActive, ListCategory, ListEntry, ListEntryCollect } from '@type';
-import { MySwal } from '@/components/common/partsMySwal';
+import { CategoryActive, OmikenCategory, ListEntryType, ListEntryCollect } from '@type';
+import { MySwal } from '@common/partsMySwal';
 
 export function FunkUI() {
  // UI
@@ -33,11 +33,11 @@ export function FunkUI() {
  });
 
  // ダイアログを開く
- const openEditor = <T extends ListCategory>(editorItem: ListEntry<T>) => {
+ const openEditor = <T extends OmikenCategory>(editorItem: ListEntryType<T>) => {
   const { type, key, mode } = editorItem;
 
   if (listEntry.value && listEntry.value[type]) {
-   const entry = listEntry.value[type] as ListEntry<T>;
+   const entry = listEntry.value[type] as ListEntryType<T>;
    entry.key = key;
    entry.mode = mode || null;
    entry.isOpen = true;

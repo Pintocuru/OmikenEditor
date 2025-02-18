@@ -99,14 +99,14 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import { ThresholdType, ConditionType, TypesType, RulesType, OmikujiType, OmikenEntry, ListCategory } from '@type';
-import { FunkThresholdInitial, FunkThreshold } from '@/composables/FunkThreshold';
+import { ThresholdType, ConditionType, TypesType, RulesType, OmikujiType, OmikenEntry, OmikenCategory } from '@type';
+import { FunkThresholdInitial, FunkThreshold } from '@composables/FunkThreshold';
 import ThresholdSelect from './ThresholdSelect.vue';
 import ThresholdSimple from './ThresholdSimple.vue';
 import ThresholdCount from './ThresholdCount.vue';
 import ThresholdMatch from './ThresholdMatch.vue';
 import ThresholdRelation from './ThresholdRelation.vue';
-import { FunkEmits } from '@/composables/FunkEmits';
+import { FunkEmits } from '@composables/FunkEmits';
 
 const props = defineProps<{
  item: RulesType | OmikujiType;
@@ -115,7 +115,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
- (e: 'update:Omiken', payload: OmikenEntry<ListCategory>): void;
+ (e: 'update:Omiken', payload: OmikenEntry<OmikenCategory>): void;
 }>();
 
 // コンポーザブル:FunkEmits

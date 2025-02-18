@@ -17,9 +17,9 @@
 
 <script setup lang="ts">
 import { ref, computed, inject, type Ref } from 'vue';
-import { OmikenEntry, OmikujiType, AppEditorType, PlaceType, ListCategory, OmikenRulesType } from '@type';
-import { FunkEmits } from '@/composables/FunkEmits';
-import { MySwal } from '@/components/common/partsMySwal';
+import { OmikenEntry, OmikujiType, AppEditorType, PlaceType, OmikenCategory, OmikenRulesType } from '@type';
+import { FunkEmits } from '@composables/FunkEmits';
+import { MySwal } from '@common/partsMySwal';
 
 const props = defineProps<{
  editMode: 'rule' | 'omikujiRemove' | 'omikujiAdd' | 'omikujiAddDialog' | 'place' | 'placeDialog';
@@ -29,7 +29,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
  (e: 'edit'): void;
- (e: 'update:Omiken', payload: OmikenEntry<ListCategory>): void;
+ (e: 'update:Omiken', payload: OmikenEntry<OmikenCategory>): void;
 }>();
 
 const menu = ref(false);
@@ -114,7 +114,7 @@ const handleDuplicate = () => {
  if (type === 'omikujis') optionId = props.optionRules ? props.optionRules.id : undefined;
 
  const { id, ...rest } = JSON.parse(JSON.stringify(props.entry));
- const payload: OmikenEntry<ListCategory> = {
+ const payload: OmikenEntry<OmikenCategory> = {
   type,
   addKeys: {
    ...rest,
@@ -195,7 +195,7 @@ const handleEnableIdsAdd = async () => {
 };
 
 // Utility functions
-function getEntryType(): ListCategory {
+function getEntryType(): OmikenCategory {
  switch (props.editMode) {
   case 'rule':
    return 'rules';

@@ -1,10 +1,10 @@
 // src/composables/FunkOmikuji.ts
 import { computed, inject, Ref } from 'vue';
 import { AppEditorType, OneCommePostType } from '@type';
-import { useOmikenStore } from './FunkOmiken';
+import { useOmikenStore } from '@store/UseOmikenStore';
 
 export function FunkOmikuji() {
- // piniaの宣言
+ // pinia:omikenStore
  const omikenStore = useOmikenStore();
  const Charas = computed(() => omikenStore.AppEditor?.Charas ?? {});
  const places = computed(() => omikenStore.AppEditor?.Omiken.places ?? {});

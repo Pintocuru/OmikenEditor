@@ -1,15 +1,15 @@
 // composables/FunkOmiken.ts
 import { ref } from 'vue';
 import { OmikenEntry, AppEditorType, PresetOmikenType, OmikenSchema, OmikenType, OmikenCategory } from '@type';
-import { AppEditorFetch } from '@/composables/FunkJSON';
-import { FunkOmikenUpdater } from './FunkOmikenUpdater';
-import { MySwal } from '@/components/common/partsMySwal';
+import { AppEditorFetch } from '@composables/FunkJSON';
+import { FunkOmikenUpdater } from '@composables/FunkOmikenUpdater';
+import { MySwal } from '@common/partsMySwal';
 import { defineStore } from 'pinia';
 
 // 他のコンポーザブルを初期化
 const { handleUpdate, handleAddItems, handleDeleteItems, handlePresetUpdate } = FunkOmikenUpdater();
 
-export const useOmikenStore = defineStore('omiken', () => {
+export const useOmikenStore = defineStore('omikenStore', () => {
  const AppEditor = ref<AppEditorType>({
   Omiken: OmikenSchema.parse({}) as OmikenType,
   Presets: {},

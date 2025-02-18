@@ -54,21 +54,21 @@
 
 <script setup lang="ts">
 import { computed, inject, Ref } from 'vue';
-import { OmikenEntry, ListCategory, ListEntry, AppEditorType } from '@type';
-import PartsArrayAction from '@/components/common/PartsArrayAction.vue';
-import DialogOmikujiPostDescription from '@/components/DialogOmikuji/DialogOmikujiPostDescription.vue';
-import DialogPlaceTextMode from '@/components/DialogPlace/DialogPlaceTextMode.vue';
-import DialogPlaceEditor from '@/components/DialogPlace/DialogPlaceEditor.vue';
-import PartsNameEditor from '@/components/common/PartsNameEditor.vue';
-import { FunkEmits } from '@/composables/FunkEmits';
+import { OmikenEntry, OmikenCategory, ListEntryType, AppEditorType } from '@type';
+import PartsArrayAction from '@common/PartsArrayAction.vue';
+import DialogOmikujiPostDescription from '@components/DialogOmikuji/DialogOmikujiPostDescription.vue';
+import DialogPlaceTextMode from '@components/DialogPlace/DialogPlaceTextMode.vue';
+import DialogPlaceEditor from '@components/DialogPlace/DialogPlaceEditor.vue';
+import PartsNameEditor from '@common/PartsNameEditor.vue';
+import { FunkEmits } from '@composables/FunkEmits';
 
 const props = defineProps<{
- entry: ListEntry<'places'> | null;
+ entry: ListEntryType<'places'> | null;
 }>();
 
 const emit = defineEmits<{
- (e: 'update:Omiken', payload: OmikenEntry<ListCategory>): void;
- (e: 'open-editor', editorItem: ListEntry<ListCategory>): void;
+ (e: 'update:Omiken', payload: OmikenEntry<OmikenCategory>): void;
+ (e: 'open-editor', editorItem: ListEntryType<OmikenCategory>): void;
 }>();
 
 // inject

@@ -21,9 +21,9 @@
 
 <script setup lang="ts">
 import { ref, PropType, computed } from 'vue';
-import { OmikenEntry, ListCategory, OmikenType, OmikujiType, PlaceType, RulesType } from '@type';
-import { FunkEmits } from '@/composables/FunkEmits';
-import { FunkTypes } from '@/composables/FunkTypes';
+import { OmikenEntry, OmikenCategory, OmikenType, OmikujiType, PlaceType, RulesType } from '@type';
+import { FunkEmits } from '@composables/FunkEmits';
+import { FunkTypes } from '@composables/FunkTypes';
 
 const props = defineProps<{
  type: 'omikujis' | 'places';
@@ -32,7 +32,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
- (e: 'update:Omiken', payload: OmikenEntry<ListCategory>): void;
+ (e: 'update:Omiken', payload: OmikenEntry<OmikenCategory>): void;
 }>();
 
 const menu = ref(false);

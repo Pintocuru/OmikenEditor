@@ -65,9 +65,17 @@
 
 <script setup lang="ts">
 import { inject, Ref, computed } from 'vue';
-import { ListCategory, ListEntry, OmikujiType, OmikenEntry, AppEditorType, PlaceValueType, PlaceType } from '@type';
-import { FunkEmits } from '@/composables/FunkEmits';
-import { FunkTypes } from '@/composables/FunkTypes';
+import {
+ OmikenCategory,
+ ListEntryType,
+ OmikujiType,
+ OmikenEntry,
+ AppEditorType,
+ PlaceValueType,
+ PlaceType
+} from '@type';
+import { FunkEmits } from '@composables/FunkEmits';
+import { FunkTypes } from '@composables/FunkTypes';
 
 const props = defineProps<{
  currentItem: OmikujiType | PlaceType;
@@ -76,8 +84,8 @@ const props = defineProps<{
 
 const emit = defineEmits<{
  (e: 'update:modelValue', value: 'places' | 'post' | 'threshold' | 'status' | 'scripts'): void;
- (e: 'update:Omiken', payload: OmikenEntry<ListCategory>): void;
- (e: 'open-editor', editorItem: ListEntry<ListCategory>): void;
+ (e: 'update:Omiken', payload: OmikenEntry<OmikenCategory>): void;
+ (e: 'open-editor', editorItem: ListEntryType<OmikenCategory>): void;
 }>();
 
 // inject

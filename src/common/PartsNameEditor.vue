@@ -31,11 +31,11 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import { OmikenEntry, ListCategory, OmikujiType, PlaceType, OmikenRulesType } from '@type';
-import { FunkEmits } from '@/composables/FunkEmits';
+import { OmikenEntry, OmikenCategory, OmikujiType, PlaceType, OmikenRulesType } from '@type';
+import { FunkEmits } from '@composables/FunkEmits';
 
 const props = defineProps<{
- type: ListCategory;
+ type: OmikenCategory;
  currentItem: OmikenRulesType | OmikujiType | PlaceType;
 }>();
 

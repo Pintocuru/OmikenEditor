@@ -42,9 +42,9 @@
 </template>
 
 <script setup lang="ts">
-import { PlaceType, ListEntry, OmikenEntry, ListCategory } from '@type';
-import PartsArrayRemovePlace from '@/components/common/PartsArrayRemovePlace.vue';
-import { FunkEmits } from '@/composables/FunkEmits';
+import { PlaceType, ListEntryType, OmikenEntry, OmikenCategory } from '@type';
+import PartsArrayRemovePlace from '@common/PartsArrayRemovePlace.vue';
+import { FunkEmits } from '@composables/FunkEmits';
 import draggable from 'vuedraggable';
 
 const props = defineProps<{
@@ -52,7 +52,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
- (e: 'update:Omiken', payload: OmikenEntry<ListCategory>): void;
+ (e: 'update:Omiken', payload: OmikenEntry<OmikenCategory>): void;
 }>();
 
 // コンポーザブル:FunkEmits

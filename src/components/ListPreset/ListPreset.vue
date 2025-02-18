@@ -13,8 +13,8 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { AppEditorType, CategoryActive, OmikenEntry, PresetAnyType, PresetTypeMap } from '@type';
-import ListPresetContent from '@/components/ListPreset/ListPresetContent.vue';
-import { FunkEmits } from '@/composables/FunkEmits';
+import ListPresetContent from '@components/ListPreset/ListPresetContent.vue';
+import { FunkEmits } from '@composables/FunkEmits';
 
 // Props Emits
 const props = defineProps<{

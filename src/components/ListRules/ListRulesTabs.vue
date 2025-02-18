@@ -74,9 +74,9 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
 import { OmikenEntry, RulesType, RuleCategory } from '@type';
-import ThresholdMain from '@/components/DialogThreshold/DialogThreshold.vue';
-import { FunkEmits } from '@/composables/FunkEmits';
-import { FunkRules } from '@/composables/FunkRules';
+import ThresholdMain from '@components/DialogThreshold/DialogThreshold.vue';
+import { FunkEmits } from '@composables/FunkEmits';
+import { FunkRules } from '@composables/FunkRules';
 
 const props = defineProps<{
  rule: RulesType;

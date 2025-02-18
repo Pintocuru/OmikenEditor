@@ -74,11 +74,11 @@
 </template>
 
 <script setup lang="ts">
-import { AppEditorType, CategoryActive, ListCategory, ListEntry, OmikenEntry, PresetOmikenType } from '@type';
-import { FunkEmits } from '@/composables/FunkEmits';
-import { FunkPresets } from '@/composables/FunkPresets';
+import { AppEditorType, CategoryActive, OmikenCategory, ListEntryType, OmikenEntry, PresetOmikenType } from '@type';
+import { FunkEmits } from '@composables/FunkEmits';
+import { FunkPresets } from '@composables/FunkPresets';
 import { computed, ref } from 'vue';
-import { MySwal } from '@/components/common/partsMySwal';
+import { MySwal } from '@common/partsMySwal';
 
 // props/emits
 type PresetProps<T extends keyof AppEditorType> = {
@@ -88,8 +88,8 @@ type PresetProps<T extends keyof AppEditorType> = {
 const props = defineProps<PresetProps<'Presets' | 'Charas' | 'Scripts'>>();
 
 const emit = defineEmits<{
- (e: 'open-editor', editorItem: ListEntry<ListCategory>): void;
- (e: 'update:Omiken', payload: OmikenEntry<ListCategory>): void;
+ (e: 'open-editor', editorItem: ListEntryType<OmikenCategory>): void;
+ (e: 'update:Omiken', payload: OmikenEntry<OmikenCategory>): void;
  (e: 'update:OmikenPreset', preset: PresetOmikenType): void;
  (e: 'update:category', value: CategoryActive): void;
 }>();

@@ -23,15 +23,15 @@ export type CategoryActive<T extends CategoryMain = CategoryMain> = {
 };
 
 // リスト用カテゴリー
-export type ListEntry<T extends OmikenCategory> = {
+export type ListEntryType<T extends 'omikujis' | 'places'> = {
  type: T;
  isOpen: boolean; // ダイアログの開閉状態
- mode: string | null; // 表示モード
- key: string | string[] | null;
+ id: string | null; // id
 };
+
 // listEntry全体の型(TODO:不要)
 export type ListEntryCollect = {
- [K in OmikenCategory]: ListEntry<K>;
+ [K in 'omikujis' | 'places']: ListEntryType<K>;
 };
 
 // ファイル操作用

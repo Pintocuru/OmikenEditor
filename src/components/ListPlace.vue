@@ -40,10 +40,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { CategoryActive, ListEntry, OmikenEntry, PlaceType, PlaceValueType } from '@type';
+import { CategoryActive, ListEntryType, OmikenEntry, PlaceType, PlaceValueType } from '@type';
 import PartsArrayAction from './common/PartsArrayAction.vue';
-import { FunkEmits } from '@/composables/FunkEmits';
-import { useOmikenStore } from '@/composables/FunkOmiken';
+import { FunkEmits } from '@composables/FunkEmits';
+import { useOmikenStore } from '@composables/FunkOmiken';
 
 const props = defineProps<{
  items: Record<string, PlaceType>;

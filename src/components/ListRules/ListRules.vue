@@ -52,21 +52,21 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { CategoryActive, RulesTypeMap, OmikenType, RulesType, OmikenTypeMap, RuleCategory } from '@type';
-import PartsArrayAction from '@/components/common/PartsArrayAction.vue';
-import DialogTypes from '@/components/DialogTypes.vue';
-import ListRulesOmikujiView from '@/components/ListRules/ListRulesOmikujis.vue';
-import ListRulesTabs from '@/components/ListRules/ListRulesTabs.vue';
-import PartsNameEditor from '@/components/common/PartsNameEditor.vue';
-import PartsToolbarColor from '@/components/common/PartsToolbarColor.vue';
-import { FunkEmits } from '@/composables/FunkEmits';
-import { useOmikenStore } from '@/composables/FunkOmiken';
+import PartsArrayAction from '@common/PartsArrayAction.vue';
+import DialogTypes from '@components/DialogTypes.vue';
+import ListRulesOmikujiView from '@components/ListRules/ListRulesOmikujis.vue';
+import ListRulesTabs from '@components/ListRules/ListRulesTabs.vue';
+import PartsNameEditor from '@common/PartsNameEditor.vue';
+import PartsToolbarColor from '@common/PartsToolbarColor.vue';
+import { FunkEmits } from '@composables/FunkEmits';
+import { useOmikenStore } from '@composables/FunkOmiken';
 
 const props = defineProps<{
  categoryActive: CategoryActive<'rules'>;
  items: Record<string, RulesType>;
 }>();
 
-// piniaの宣言
+// pinia:omikenStore
 const omikenStore = useOmikenStore();
 const { updateOmikenEntry } = FunkEmits();
 
