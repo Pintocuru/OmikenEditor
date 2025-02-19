@@ -6,11 +6,15 @@
    <v-card variant="tonal">
     <!-- タイトルバーと操作ボタン -->
     <v-toolbar density="compact">
-     <v-toolbar-title class="ml-4" @click="openEditorItem('places', place.id)">
+     <v-toolbar-title class="ml-4" @click="UIStore.updateDialog({ type: 'places', id: place.id })">
       {{ place?.name }}
      </v-toolbar-title>
      <template #append>
-      <PartsArrayAction editMode="place" :entry="place" @edit="openEditorItem('places', place.id)" />
+      <PartsArrayAction
+       editMode="place"
+       :entry="place"
+       @edit="UIStore.updateDialog({ type: 'places', id: place.id })"
+      />
      </template>
     </v-toolbar>
 
@@ -27,7 +31,7 @@
  </v-row>
 
  <v-sheet>
-  <v-btn block @click="addItem()" color="primary" variant="flat" class="mt-6">
+  <v-btn block @click="addItem" color="primary" variant="flat" class="mt-6">
    <v-icon left>mdi-plus</v-icon> 📍 プレースホルダーの追加
   </v-btn>
  </v-sheet>
@@ -35,20 +39,20 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { CategoryActive, ListEntryType, OmikenEntry, PlaceType, PlaceValueType } from '@type';
+import { NaviCategoryType, PlaceType, PlaceValueType } from '@type';
 import PartsArrayAction from './common/PartsArrayAction.vue';
-
-import { useOmikenStore } from '@composables/FunkOmiken';
+import { useOmikenStore } from '@/store/UseOmikenStore';
+import { UseUIStore } from '@/store/UseUIStore';
 
 const props = defineProps<{
  items: Record<string, PlaceType>;
- categoryActive: CategoryActive;
+ categoryActive: NaviCategoryType;
 }>();
 
-// piniaの宣言
+// pinia:omikenStore
 const omikenStore = useOmikenStore();
-// コンポーザブル:FunkEmits
-const { updateOmiken, openEditorItem } = FunkEmits();
+// pinia:UseUIStore
+const UIStore = UseUIStore();
 
 // placesをソートして取得
 const placesNameSort = computed(() => {

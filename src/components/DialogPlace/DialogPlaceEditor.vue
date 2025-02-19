@@ -2,10 +2,10 @@
 <template>
  <v-list density="compact">
   <draggable
-   v-model="currentItem.values"
+   v-model="item.values"
    item-key="id"
    handle=".handle"
-   @end="updateOmikenEntry('places', currentItem)"
+   @end="updateOmiken({ type: 'places', updates: [item] })"
   >
    <template #item="{ element: value, index }">
     <v-list-item>
@@ -18,20 +18,24 @@
         v-model.number="value.weight"
         label="重み"
         type="number"
-        @update:model-value="updateOmikenEntry('places', currentItem)"
+        @update:model-value="updateOmiken({ type: 'places', updates: [item] })"
        />
       </v-col>
       <v-col>
-       <v-text-field v-model="value.value" label="値" @update:model-value="updateOmikenEntry('places', currentItem)" />
+       <v-text-field
+        v-model="value.value"
+        label="値"
+        @update:model-value="updateOmiken({ type: 'places', updates: [item] })"
+       />
       </v-col>
       <v-col cols="auto">
        <PartsArrayRemovePlace
         type="omikujis"
-        :currentItem="currentItem"
+        :currentItem="item"
         :index="index"
         size="32"
-        v-model:array="currentItem.values"
-        @update:array="updateOmikenEntry('places', currentItem)"
+        v-model:array="item.values"
+        @update:array="updateOmiken({ type: 'places', updates: [item] })"
        />
       </v-col>
      </v-row>
@@ -44,17 +48,13 @@
 <script setup lang="ts">
 import { PlaceType, ListEntryType, OmikenEntry, OmikenCategory } from '@type';
 import PartsArrayRemovePlace from '@common/PartsArrayRemovePlace.vue';
-
+import { useOmikenStore } from '@/store/UseOmikenStore';
 import draggable from 'vuedraggable';
 
 const props = defineProps<{
- currentItem: PlaceType;
+ item: PlaceType;
 }>();
 
-const emit = defineEmits<{
- (e: 'update:Omiken', payload: OmikenEntry<OmikenCategory>): void;
-}>();
-
-// コンポーザブル:FunkEmits
-const { updateOmikenEntry } = FunkEmits(emit);
+// pinia:OmikenStore
+const { AppEditor, isAppEditorLoading, updateOmiken } = useOmikenStore();
 </script>

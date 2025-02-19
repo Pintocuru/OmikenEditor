@@ -52,7 +52,7 @@ import DialogOmikuji from '@components/DialogOmikuji/DialogOmikuji.vue';
 import DialogPlace from '@components/DialogPlace/DialogPlace.vue';
 import { UseUIStore } from '@/store/UseUIStore';
 
-// Props / emit
+// Props
 const props = defineProps<{
  Omiken: OmikenType;
 }>();
@@ -75,9 +75,6 @@ const getSortedSiblings = (category: EventCategory) =>
  Object.keys(props.Omiken[category]).sort((a, b) =>
   props.Omiken[category][a].name.localeCompare(props.Omiken[category][b].name)
  );
-
-// ???
-const hasSiblings = (category: EventCategory) => getSortedSiblings(category).length > 1;
 
 // 前または次のアイテムのキーを取得（循環）
 const getSiblingKey = (category: EventCategory, currentKey: string, direction: 'prev' | 'next') => {

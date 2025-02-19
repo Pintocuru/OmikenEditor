@@ -7,7 +7,8 @@ import {
  OmikenSchema,
  OmikenType,
  OmikenCategory,
- OmikenTypeMap
+ OmikenTypeMap,
+ EditorSettingsType
 } from '@type';
 import { AppEditorFetch } from '@composables/FunkJSON';
 import { FunkOmikenUpdater } from '@composables/FunkOmikenUpdater';
@@ -18,13 +19,7 @@ import { defineStore } from 'pinia';
 const { handleUpdate, handleAddItems, handleDeleteItems, handlePresetUpdate } = FunkOmikenUpdater();
 
 export const useOmikenStore = defineStore('omikenStore', () => {
- const AppEditor = ref<AppEditorType>({
-  Omiken: OmikenSchema.parse({}) as OmikenType,
-  Presets: {},
-  Charas: {},
-  Scripts: {}
- });
-
+ const AppEditor = ref<AppEditorType>({} as AppEditorType);
  const isAppEditorLoading = ref(true); // 読み込み判定のref
 
  // getter

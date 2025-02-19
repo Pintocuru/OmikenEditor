@@ -3,11 +3,7 @@
  <!-- 各種リストコンポーネントの条件付きレンダリング -->
  <v-scroll-x-transition mode="out-in">
   <div v-if="currentListComponent" :key="getComponentKey">
-   <component
-    :is="currentListComponent.component"
-    :items="currentListComponent.items"
-    :categoryActive="categoryActive"
-   />
+   <component :is="currentListComponent.component" :items="currentListComponent.items" :categoryActive="naviCategory" />
   </div>
  </v-scroll-x-transition>
 </template>
@@ -18,16 +14,16 @@ import ListRules from '@components/ListRules/ListRules.vue';
 import ListOmikuji from '@components/ListOmikuji.vue';
 import ListPlace from '@components/ListPlace.vue';
 import ListPreset from '@components/ListPreset/ListPreset.vue';
-import { CategoryActive, AppEditorType, CategoryMain, CategorySub } from '@type';
+import { NaviCategoryType, AppEditorType, CategoryMain, CategorySub } from '@type';
 
 // Props
 const props = defineProps<{
  AppEditor: AppEditorType;
- categoryActive: CategoryActive;
+ naviCategory: NaviCategoryType;
 }>();
 
 const currentListComponent = computed(() => {
- return componentMap[props.categoryActive.main] || null;
+ return componentMap[props.naviCategory.main] || null;
 });
 
 const getItemsBySub = (data: AppEditorType, sub?: CategorySub[keyof CategorySub]) => {
@@ -36,10 +32,11 @@ const getItemsBySub = (data: AppEditorType, sub?: CategorySub[keyof CategorySub]
 
 // 子コンポーネントの指定
 const componentMap: Record<CategoryMain, { component: any; items: any }> = {
- rules: { component: ListRules, items: getItemsBySub(props.AppEditor, props.categoryActive.sub) },
+ rules: { component: ListRules, items: getItemsBySub(props.AppEditor, props.naviCategory.sub) },
  omikujis: { component: ListOmikuji, items: props.AppEditor.Omiken.omikujis },
  places: { component: ListPlace, items: props.AppEditor.Omiken.places },
- presets: { component: ListPreset, items: getItemsBySub(props.AppEditor, props.categoryActive.sub) }
+ presets: { component: ListPreset, items: getItemsBySub(props.AppEditor, props.naviCategory.sub) },
+ settings: { component: undefined, items: undefined } // TODO settingsの実装
 };
 
 // サブカテゴリーに基づいてitemsを取得する関数
@@ -54,7 +51,7 @@ const subCategoryMap = new Map<CategorySub[CategoryMain], any>([
 
 // コンポーネントのkeyを生成するcomputed
 const getComponentKey = computed(() => {
- const { main, sub = 'default' } = props.categoryActive;
+ const { main, sub = 'default' } = props.naviCategory;
  return `${main}-${sub}`;
 });
 </script>

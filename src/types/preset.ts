@@ -1,6 +1,6 @@
 // src/types/preset.ts
 import { BaseType, OmikenType, OneCommePostType } from './OmikenTypes';
-import { GameType, PluginStoreType, SelectOmikujiOptions } from './plugin';
+import { GameType, PluginStoreType, SelectOmikujiOptions } from './pluginType';
 
 // preset全体の型定義
 export type PresetType = {
@@ -48,7 +48,6 @@ export interface CharaType extends PresetBaseType {
   Default: string; // defaultは必須
   [key: string]: string; // 追加のキーに対応
  };
- party: string[]; // キャラクター表示時、WordPartyを発動させるキー群
 }
 
 // ---

@@ -1,6 +1,6 @@
 // src/composables/FunkEmits.ts
 
-import { ListEntryType, OmikenEntry, PresetOmikenType, CategoryActive, OmikenCategory, OmikenTypeMap } from '@type';
+import { ListEntryType, OmikenEntry, PresetOmikenType, NaviCategoryType, OmikenCategory, OmikenTypeMap } from '@type';
 import { useOmikenStore } from '@store/UseOmikenStore';
 
 export function FunkEmits() {
@@ -21,7 +21,7 @@ export function FunkEmits() {
  const updateOmikenPreset = (preset: PresetOmikenType) => emit('update:OmikenPreset', preset);
 
  // リスト開閉関数
- const openList = (category: CategoryActive) => emit('update:category', category);
+ const openList = (category: NaviCategoryType) => emit('update:category', category);
 
  // ダイアログを表示するemit
  const openEditorItem = (type: OmikenCategory, id: string) => {

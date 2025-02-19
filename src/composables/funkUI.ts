@@ -1,6 +1,6 @@
 // src/composables/funkUI.ts
 import { Ref, ref } from 'vue';
-import { CategoryActive, OmikenCategory, ListEntryType, ListEntryCollect } from '@type';
+import { NaviCategoryType, OmikenCategory, ListEntryType, ListEntryCollect } from '@type';
 import { MySwal } from '@common/partsMySwal';
 
 export function FunkUI() {
@@ -8,7 +8,7 @@ export function FunkUI() {
  const uiDrawer = ref(null); // ナビゲーションドロワーの表示/非表示
 
  // ナビゲーション用:選択したカテゴリ
- const naviCategory = ref<CategoryActive>({
+ const naviCategory = ref<NaviCategoryType>({
   main: 'rules'
  });
 

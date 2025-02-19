@@ -13,11 +13,7 @@
 
 <script setup lang="ts">
 import { saveOmiken } from '@composables/FunkJSON';
-import { OmikenType } from '@/types/Omiken';
+import { OmikenType } from '@type';
 
 const props = defineProps<{ Omiken: OmikenType }>();
-
-const emit = defineEmits<{
- (e: 'update:uiDark', value: string): void;
-}>();
 </script>

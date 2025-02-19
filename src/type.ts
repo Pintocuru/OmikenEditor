@@ -8,6 +8,7 @@ export * from './types/OmikenZod';
 // エディター機能で使用する型定義
 export * from './types/editor';
 // プラグイン機能で使用する型定義
-export * from './types/plugin';
+export * from './types/pluginType';
+export * from './types/pluginApi';
 // presetに関する型定義
 export * from './types/preset';

@@ -1,6 +1,6 @@
 // src/store/UseUIStore.ts
 import { ref } from 'vue';
-import { CategoryActive, ListEntryType } from '@type';
+import { NaviCategoryType, CategoryMain, EventCategory, ListEntryType } from '@type';
 import { MySwal } from '@common/partsMySwal';
 import { defineStore } from 'pinia';
 
@@ -9,16 +9,21 @@ export const UseUIStore = defineStore('UIStore', () => {
  const uiDrawer = ref(null);
 
  // ナビゲーション用:選択したカテゴリ
- const naviCategory = ref<CategoryActive>({ main: 'rules', sub: 'comments' });
+ const naviCategory = ref<NaviCategoryType>({ main: 'rules', sub: 'comments' });
 
  // ダイアログで表示させるアイテム
- const listEntry = ref<{ [K in 'omikujis' | 'places']: ListEntryType<K> }>({
+ const listEntry = ref<{ [K in EventCategory]: ListEntryType<K> }>({
   omikujis: { type: 'omikujis', isOpen: false, id: null },
   places: { type: 'places', isOpen: false, id: null }
  });
 
+ // リストを更新する
+ const updateNavi = <T extends CategoryMain>({ main, sub }: NaviCategoryType<T>) => {
+  naviCategory.value = { main, sub };
+ };
+
  // ダイアログを開く
- const updateDialog = <T extends 'omikujis' | 'places'>({ type, id = null, isOpen = true }: ListEntryType<T>) => {
+ const updateDialog = <T extends EventCategory>({ type, id = null, isOpen = true }: ListEntryType<T>) => {
   listEntry.value[type] = { ...listEntry.value[type], id, isOpen };
  };
 
@@ -26,6 +31,7 @@ export const UseUIStore = defineStore('UIStore', () => {
   uiDrawer,
   naviCategory,
   listEntry,
+  updateNavi,
   updateDialog
  };
 });

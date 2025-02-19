@@ -7,13 +7,13 @@
      <!-- TODO DialogTypes は廃止、代わりにダイアログでorderを編集するものを新規作成 -->
      <DialogTypes :rule="rule" :Omiken="items.Omiken" />
      {{ rule.name }}
-     <PartsNameEditor type="rules" :item="rule" />
+     <PartsNameEditor :type="type" :item="rule" />
 
      <v-chip label class="ml-4"> {{ rule.enables.length }} items </v-chip>
 
      <PartsToolbarColor
       v-model="rule.color"
-      @update:model-value="(color) => updateRuleColor(rule, color, props.categoryActive.sub)"
+      @update:model-value="(color) => omikenStore.updateOmiken({ type, updates: [{ ...rule, color }] })"
      />
 
      <v-icon class="ml-2">
@@ -50,8 +50,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { CategoryActive, RulesTypeMap, RuleCategory } from '@type';
+import { computed, ref } from 'vue';
+import { NaviCategoryType, RulesTypeMap, RuleCategory } from '@type';
 import PartsArrayAction from '@common/PartsArrayAction.vue';
 import DialogTypes from '@components/DialogTypes.vue';
 import ListRulesOmikujiView from '@components/ListRules/ListRulesOmikujis.vue';
@@ -62,14 +62,14 @@ import PartsToolbarColor from '@common/PartsToolbarColor.vue';
 import { useOmikenStore } from '@store/UseOmikenStore';
 
 const props = defineProps<{
- categoryActive: CategoryActive<'rules'>;
- items: Record<string, RulesType>;
+ categoryActive: NaviCategoryType<'rules'>;
+ items: Record<string, RulesTypeMap<RuleCategory>>;
 }>();
 
 // pinia:omikenStore
 const omikenStore = useOmikenStore();
-const { updateOmikenEntry } = FunkEmits();
 
+const type = computed(() => props.categoryActive.sub);
 const uiState = ref({
  expandedPanels: [] as string[],
  showWeightEditor: false
@@ -91,14 +91,8 @@ const isWeightEdit = (showWeightEditor: boolean) => {
  uiState.value.showWeightEditor = showWeightEditor;
 };
 
-// ルールの色を更新
-const updateRuleColor = <T extends RuleCategory>(rule: RulesTypeMap<T>, color: string, category: T) => {
- const updated: RulesTypeMap<T> = { ...rule, color };
- updateOmikenEntry<T>(category, updated);
-};
-
 // アイテムの追加
 const addItem = () => {
- omikenStore.updateOmiken({ type: props.categoryActive.sub, addKeys: [{ name: '新しいルール' }] });
+ omikenStore.updateOmiken({ type: type.value, addKeys: [{ name: '新しいルール' }] });
 };
 </script>

@@ -1,5 +1,5 @@
 // src/types/editor.ts
-import { OmikenCategory, OmikenType, OmikenTypeMap, RuleCategory } from './OmikenZod';
+import { EventCategory, OmikenCategory, OmikenType, OmikenTypeMap, RuleCategory } from './OmikenZod';
 import { PresetCategory, PresetType } from './preset';
 
 // エディター用型定義
@@ -7,31 +7,34 @@ import { PresetCategory, PresetType } from './preset';
 // AppEditor
 export type AppEditorType = PresetType & {
  Omiken: OmikenType;
+ settings: EditorSettingsType;
 };
 
 // メインカテゴリーの型
-export type CategoryMain = 'rules' | 'omikujis' | 'places' | 'presets';
+export type CategoryMain = 'rules' | 'omikujis' | 'places' | 'presets' | 'settings';
 export type CategorySub = {
  rules: RuleCategory;
  omikujis: never;
  places: never;
  presets: PresetCategory;
+ settings: never;
 };
-export type CategoryActive<T extends CategoryMain = CategoryMain> = {
+
+export type NaviCategoryType<T extends CategoryMain = CategoryMain> = {
  main: T; // 現在選択されているメインカテゴリー
- sub: CategorySub[T]; // メインカテゴリーに対応するサブカテゴリー（オプショナル）
+ sub?: CategorySub[T]; // メインカテゴリーに対応するサブカテゴリー（オプショナル）
 };
 
 // リスト用カテゴリー
-export type ListEntryType<T extends 'omikujis' | 'places'> = {
+export type ListEntryType<T extends EventCategory> = {
  type: T;
- isOpen: boolean; // ダイアログの開閉状態
  id: string | null; // id
+ isOpen?: boolean; // ダイアログの開閉状態
 };
 
 // listEntry全体の型(TODO:不要)
 export type ListEntryCollect = {
- [K in 'omikujis' | 'places']: ListEntryType<K>;
+ [K in EventCategory]: ListEntryType<K>;
 };
 
 // ファイル操作用
@@ -40,4 +43,9 @@ export type OmikenEntry<T extends OmikenCategory> = {
  updates?: OmikenTypeMap<T>[];
  addKeys?: Partial<OmikenTypeMap<T>>[];
  delKeys?: string[];
+};
+
+// エディター用設定ファイル
+export type EditorSettingsType = {
+ party: string[]; // キャラクター表示時、WordPartyを発動させるキー群
 };

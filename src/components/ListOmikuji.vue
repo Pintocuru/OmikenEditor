@@ -34,7 +34,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { CategoryActive, OmikujiType } from '@type';
+import { NaviCategoryType, OmikujiType } from '@type';
 import PartsArrayAction from '@common/PartsArrayAction.vue';
 import { FunkOmikuji } from '@composables/FunkOmikuji';
 
@@ -42,7 +42,7 @@ import { useOmikenStore } from '@composables/FunkOmiken';
 
 const props = defineProps<{
  items: Record<string, OmikujiType>;
- categoryActive: CategoryActive;
+ categoryActive: NaviCategoryType;
 }>();
 
 // piniaの宣言
