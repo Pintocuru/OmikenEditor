@@ -15,7 +15,6 @@
 
 <script setup lang="ts">
 import { OmikenCategory, ListEntryType, OmikujiType, OmikenEntry, AppEditorType, ScriptType } from '@type';
-import { FunkEmits } from '@composables/FunkEmits';
 
 const props = defineProps<{
  currentItem: OmikujiType;

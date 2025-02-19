@@ -62,7 +62,7 @@
 <script setup lang="ts">
 import { computed, inject, ref, Ref, watch } from 'vue';
 import { OmikenCategory, ListEntryType, OmikujiType, OmikenEntry, AppEditorType } from '@type';
-import { FunkEmits } from '@composables/FunkEmits';
+
 import DialogOmikujiScriptsField from '@components/DialogOmikuji/DialogOmikujiScriptsField.vue';
 
 const props = defineProps<{

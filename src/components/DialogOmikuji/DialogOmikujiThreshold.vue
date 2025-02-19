@@ -1,11 +1,11 @@
 <!-- src/components/DialogOmikuji/DialogOmikujiThreshold.vue -->
 <template>
- <DialogThreshold :item="currentItem" type="comment" mode="omikujis" @update:Omiken="updateOmiken" />
+ <DialogThreshold :item="currentItem" type="comment" mode="omikujis" />
 </template>
 
 <script setup lang="ts">
 import { OmikenCategory, ListEntryType, OmikujiType, OmikenEntry } from '@type';
-import { FunkEmits } from '@composables/FunkEmits';
+
 import DialogThreshold from '@components/DialogThreshold/DialogThreshold.vue';
 
 const props = defineProps<{

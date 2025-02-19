@@ -27,7 +27,6 @@
         :entry="omikujis[omikujiId]"
         :optionRules="currentItem"
         @edit="openEditorItem('omikujis', omikujiId)"
-        @update:Omiken="updateOmiken"
        />
       </template>
      </v-toolbar>
@@ -137,7 +136,7 @@ import PartsArrayAction from '@common/PartsArrayAction.vue';
 import { FunkRules } from '@composables/FunkRules';
 import { FunkOmikuji } from '@composables/FunkOmikuji';
 import { FunkThreshold } from '@composables/FunkThreshold';
-import { FunkEmits } from '@composables/FunkEmits';
+
 import draggable from 'vuedraggable';
 
 const props = defineProps<{

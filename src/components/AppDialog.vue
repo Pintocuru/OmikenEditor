@@ -1,47 +1,40 @@
 <!-- src/components/AppDialog.vue -->
 <template>
  <v-dialog
-  v-for="(entry, category) in listEntry"
-  :key="category"
+  v-for="(entry, type) in listEntry"
+  :key="generateUniqueKey(type, entry.id)"
   :model-value="entry.isOpen"
-  @update:model-value="(value) => updateDialog(category, value)"
-  @click:outside="() => updateDialog(category, false)"
+  @update:model-value="(value) => updateDialog(type, value)"
+  @click:outside="() => updateDialog(type, false)"
   max-width="800px"
  >
   <v-card>
    <v-fab-transition>
-    <div v-if="getEditComponent" :key="generateUniqueKey(category, entry.key)">
-     <component
-      :is="getEditComponent(category)"
-      :entry="entry"
-      @update:Omiken="updateOmiken"
-      @open-editor="openEditor"
-     />
-    </div>
+    <component v-if="entry.id" :is="getEditComponent(type)" :entry="Omiken[type][entry.id]" />
    </v-fab-transition>
    <v-card-actions>
     <v-tooltip
-     v-if="getSiblingItems(category, entry.key as string).length > 1"
-     :text="getSiblingName(category, entry.key as string, 'prev')"
+     v-if="getSortedSiblings(type).length > 1"
+     :text="getSiblingName(type, entry.id as string, 'prev')"
      location="top"
     >
      <template v-slot:activator="{ props }">
-      <v-btn color="grey" v-bind="props" @click="navigateToItem(category, entry.key as string, 'prev')">
+      <v-btn color="grey" v-bind="props" @click="navigateToItem(type, entry.id as string, 'prev')">
        <v-icon start>mdi-chevron-left</v-icon>
        前へ
       </v-btn>
      </template>
     </v-tooltip>
     <v-spacer></v-spacer>
-    <v-btn color="blue darken-1" @click="() => updateDialog(category, false)">閉じる</v-btn>
+    <v-btn color="blue darken-1" @click="() => updateDialog(type, false)">閉じる</v-btn>
     <v-spacer></v-spacer>
     <v-tooltip
-     v-if="getSiblingItems(category, entry.key as string).length > 1"
-     :text="getSiblingName(category, entry.key as string, 'next')"
+     v-if="getSortedSiblings(type).length > 1"
+     :text="getSiblingName(type, entry.id as string, 'next')"
      location="top"
     >
      <template v-slot:activator="{ props }">
-      <v-btn color="grey" v-bind="props" @click="navigateToItem(category, entry.key as string, 'next')">
+      <v-btn color="grey" v-bind="props" @click="navigateToItem(type, entry.id as string, 'next')">
        次へ
        <v-icon start>mdi-chevron-right</v-icon>
       </v-btn>
@@ -53,10 +46,10 @@
 </template>
 
 <script setup lang="ts">
-import { ListEntryType, OmikenCategory, OmikenType } from '@type';
+import { computed } from 'vue';
+import { EventCategory, OmikenType } from '@type';
 import DialogOmikuji from '@components/DialogOmikuji/DialogOmikuji.vue';
 import DialogPlace from '@components/DialogPlace/DialogPlace.vue';
-import { FunkEmits } from '@composables/FunkEmits';
 import { UseUIStore } from '@/store/UseUIStore';
 
 // Props / emit
@@ -66,68 +59,59 @@ const props = defineProps<{
 
 // pinia:UseUIStore
 const UIStore = UseUIStore();
-// コンポーザブル:FunkEmits
-const { updateOmiken, openEditor } = FunkEmits();
+
+// ダイアログ開閉状態
+const listEntry = computed(() => UIStore.listEntry ?? {});
 
 // エディターコンポーネントを取得する関数
-const editorMap: Record<OmikenCategory, any> = {
- comments: null,
- timers: null,
- metas: null,
+const editorComponents: Record<EventCategory, any> = {
  omikujis: DialogOmikuji,
  places: DialogPlace
 };
-const getEditComponent = (type: OmikenCategory) => editorMap[type] || null;
+const getEditComponent = (type: EventCategory) => editorComponents[type] || null;
 
 // 同じ種類のアイテムリストを取得
-const getSiblingItems = (category: OmikenCategory, currentKey: string) => {
- const items = Object.keys(props.Omiken[category]).sort((a, b) =>
+const getSortedSiblings = (category: EventCategory) =>
+ Object.keys(props.Omiken[category]).sort((a, b) =>
   props.Omiken[category][a].name.localeCompare(props.Omiken[category][b].name)
  );
- return items;
-};
+
+// ???
+const hasSiblings = (category: EventCategory) => getSortedSiblings(category).length > 1;
 
 // 前または次のアイテムのキーを取得（循環）
-const getSiblingKey = (category: OmikenCategory, currentKey: string, direction: 'prev' | 'next') => {
- const items = getSiblingItems(category, currentKey);
+const getSiblingKey = (category: EventCategory, currentKey: string, direction: 'prev' | 'next') => {
+ const items = getSortedSiblings(category);
  if (items.length <= 1) return null;
 
  const currentIndex = items.indexOf(currentKey);
- if (direction === 'prev') {
-  return currentIndex > 0 ? items[currentIndex - 1] : items[items.length - 1];
- } else {
-  return currentIndex < items.length - 1 ? items[currentIndex + 1] : items[0];
- }
+ return direction === 'prev'
+  ? currentIndex > 0
+    ? items[currentIndex - 1]
+    : items[items.length - 1]
+  : currentIndex < items.length - 1
+    ? items[currentIndex + 1]
+    : items[0];
 };
 
 // アイテムの名前を取得
-const getSiblingName = (category: OmikenCategory, currentKey: string, direction: 'prev' | 'next') =>
+const getSiblingName = (category: EventCategory, currentKey: string, direction: 'prev' | 'next') =>
  props.Omiken[category][getSiblingKey(category, currentKey, direction) || '']?.name || '';
 
-// アイテム間移動（修正版）
-const navigateToItem = (category: 'omikujis' | 'places', currentKey: string, direction: 'prev' | 'next') => {
+// アイテム間移動
+const navigateToItem = (category: EventCategory, currentKey: string, direction: 'prev' | 'next') => {
  const nextKey = getSiblingKey(category, currentKey, direction);
  if (nextKey) {
   updateDialog(category, false);
-  openEditor({
-   isOpen: true,
-   type: category,
-   key: nextKey,
-   mode: props.listEntry[category].mode
-  });
+  updateDialog(category, true, nextKey);
  }
 };
 
-const generateUniqueKey = (category: OmikenCategory, key: string | string[] | null) => {
- // `category` と `key` を基にユニークなキーを生成
- if (Array.isArray(key)) {
-  return `${category}-${key.join('-')}`;
- }
- return `${category}-${key || 'default'}`;
-};
+// ユニークなキーを生成
+const generateUniqueKey = (category: EventCategory, id: string | null) => `${category}-${id ?? 'default'}`;
 
 // ダイアログの状態更新
-const updateDialog = (type: 'omikujis' | 'places', isOpen: boolean, id: string | null = null) => {
+const updateDialog = (type: EventCategory, isOpen: boolean, id: string | null = null) => {
  UIStore.updateDialog({ type, id, isOpen });
 };
 </script>

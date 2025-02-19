@@ -6,11 +6,11 @@
    <v-toolbar-title>
     {{ currentItem.name }}
     <!-- 名前・説明の編集 -->
-    <PartsNameEditor type="places" :currentItem="currentItem" />
+    <PartsNameEditor type="places" :item="currentItem" />
    </v-toolbar-title>
    <template #append>
     <span class="mr-2">ID : {{ currentItem?.id }}</span>
-    <PartsArrayAction editMode="placeDialog" :entry="currentItem" @update:Omiken="updateOmiken" />
+    <PartsArrayAction editMode="placeDialog" :entry="currentItem" />
    </template>
   </v-toolbar>
 
@@ -21,7 +21,7 @@
    </v-sheet>
 
    <!-- プレースホルダーの説明 -->
-   <DialogOmikujiPostDescription :currentItem="currentItem" @open-editor="openEditor" />
+   <DialogOmikujiPostDescription :currentItem="currentItem" />
    <!-- プレースホルダー -->
    <v-card>
     <v-sheet class="d-flex ga-2 justify-end">
@@ -37,7 +37,7 @@
       @update:modelValue="updateOmikenEntry('places', currentItem)"
      />
      <!-- テキストエディター -->
-     <DialogPlaceTextMode v-if="currentItem" :currentItem="currentItem" @update:Omiken="updateOmiken" />
+     <DialogPlaceTextMode v-if="currentItem" :currentItem="currentItem" />
 
      <v-btn icon color="primary" @click="addValue">
       <v-tooltip activator="parent" location="bottom">新しい行を追加する</v-tooltip>
@@ -45,7 +45,7 @@
      </v-btn>
     </v-sheet>
     <!-- 複製・削除ボタン -->
-    <DialogPlaceEditor :currentItem="currentItem" @update:Omiken="updateOmiken" />
+    <DialogPlaceEditor :currentItem="currentItem" />
    </v-card>
   </v-card-text>
  </v-card>
@@ -60,7 +60,6 @@ import DialogOmikujiPostDescription from '@components/DialogOmikuji/DialogOmikuj
 import DialogPlaceTextMode from '@components/DialogPlace/DialogPlaceTextMode.vue';
 import DialogPlaceEditor from '@components/DialogPlace/DialogPlaceEditor.vue';
 import PartsNameEditor from '@common/PartsNameEditor.vue';
-import { FunkEmits } from '@composables/FunkEmits';
 
 const props = defineProps<{
  entry: ListEntryType<'places'> | null;

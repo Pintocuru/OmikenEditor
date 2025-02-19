@@ -37,7 +37,7 @@ import { computed } from 'vue';
 import { CategoryActive, OmikujiType } from '@type';
 import PartsArrayAction from '@common/PartsArrayAction.vue';
 import { FunkOmikuji } from '@composables/FunkOmikuji';
-import { FunkEmits } from '@composables/FunkEmits';
+
 import { useOmikenStore } from '@composables/FunkOmiken';
 
 const props = defineProps<{

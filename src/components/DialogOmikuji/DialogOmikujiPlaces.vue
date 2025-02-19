@@ -21,7 +21,6 @@
 <script setup lang="ts">
 import { computed, inject, Ref } from 'vue';
 import { OmikenCategory, ListEntryType, OmikujiType, OmikenEntry, AppEditorType, generateUniqueKey } from '@type';
-import { FunkEmits } from '@composables/FunkEmits';
 
 const props = defineProps<{
  currentItem: OmikujiType;

@@ -106,7 +106,6 @@ import ThresholdSimple from './ThresholdSimple.vue';
 import ThresholdCount from './ThresholdCount.vue';
 import ThresholdMatch from './ThresholdMatch.vue';
 import ThresholdRelation from './ThresholdRelation.vue';
-import { FunkEmits } from '@composables/FunkEmits';
 
 const props = defineProps<{
  item: RulesType | OmikujiType;

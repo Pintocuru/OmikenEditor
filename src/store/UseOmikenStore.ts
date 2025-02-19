@@ -1,6 +1,14 @@
 // composables/FunkOmiken.ts
 import { ref } from 'vue';
-import { OmikenEntry, AppEditorType, PresetOmikenType, OmikenSchema, OmikenType, OmikenCategory } from '@type';
+import {
+ OmikenEntry,
+ AppEditorType,
+ PresetOmikenType,
+ OmikenSchema,
+ OmikenType,
+ OmikenCategory,
+ OmikenTypeMap
+} from '@type';
 import { AppEditorFetch } from '@composables/FunkJSON';
 import { FunkOmikenUpdater } from '@composables/FunkOmikenUpdater';
 import { MySwal } from '@common/partsMySwal';
@@ -17,7 +25,12 @@ export const useOmikenStore = defineStore('omikenStore', () => {
   Scripts: {}
  });
 
- const isAppEditorLoading = ref(true);
+ const isAppEditorLoading = ref(true); // 読み込み判定のref
+
+ // getter
+ const getOmikenItems = (type: OmikenCategory): OmikenType[OmikenCategory] => {
+  return AppEditor.value.Omiken[type] || {};
+ };
 
  // Omikenの更新
  const updateOmiken = (payload: OmikenEntry<OmikenCategory>): void => {
@@ -70,6 +83,8 @@ export const useOmikenStore = defineStore('omikenStore', () => {
   isAppEditorLoading,
   updateOmiken,
   updateOmikenPresetData,
-  AppEditorInitialize
+  AppEditorInitialize,
+  // getter
+  getOmikenItems
  };
 });

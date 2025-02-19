@@ -5,7 +5,6 @@
   :currentItem="currentItem"
   v-model="tab"
   @update:modelValue="$emit('update:modelValue', $event)"
-  @open-editor="openEditor"
  />
 
  <!-- postメイン -->
@@ -165,13 +164,7 @@
      <v-col cols="6">
       <v-sheet class="d-flex justify-end">
        <!-- 複製・削除ボタン -->
-       <PartsArrayRemove
-        type="omikujis"
-        :currentItem="currentItem"
-        :array="currentItem.post"
-        :index="index"
-        @update:Omiken="updateOmiken"
-       />
+       <PartsArrayRemove type="omikujis" :currentItem="currentItem" :array="currentItem.post" :index="index" />
       </v-sheet>
      </v-col>
     </v-row>
@@ -191,7 +184,6 @@ import { OmikenCategory, ListEntryType, OmikujiType, OmikenEntry, OneCommePostTy
 import DialogOmikujiPostDescription from '@components/DialogOmikuji/DialogOmikujiPostDescription.vue';
 import PartsArrayRemove from '@common/PartsArrayRemove.vue';
 import { FunkOmikuji } from '@composables/FunkOmikuji';
-import { FunkEmits } from '@composables/FunkEmits';
 
 const props = defineProps<{
  currentItem: OmikujiType;

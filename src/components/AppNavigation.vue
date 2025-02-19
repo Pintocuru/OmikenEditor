@@ -47,7 +47,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { AppEditorType, CategoryActive } from '@type';
-import { FunkEmits } from '@composables/FunkEmits';
 
 const props = defineProps<{
  AppEditor: AppEditorType;

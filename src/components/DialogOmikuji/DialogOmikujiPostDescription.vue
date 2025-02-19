@@ -74,7 +74,7 @@ import {
  PlaceValueType,
  PlaceType
 } from '@type';
-import { FunkEmits } from '@composables/FunkEmits';
+
 import { FunkTypes } from '@composables/FunkTypes';
 
 const props = defineProps<{

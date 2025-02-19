@@ -10,12 +10,7 @@
       {{ place?.name }}
      </v-toolbar-title>
      <template #append>
-      <PartsArrayAction
-       editMode="place"
-       :entry="place"
-       @edit="openEditorItem('places', place.id)"
-       @update:Omiken="updateOmiken"
-      />
+      <PartsArrayAction editMode="place" :entry="place" @edit="openEditorItem('places', place.id)" />
      </template>
     </v-toolbar>
 
@@ -42,7 +37,7 @@
 import { computed } from 'vue';
 import { CategoryActive, ListEntryType, OmikenEntry, PlaceType, PlaceValueType } from '@type';
 import PartsArrayAction from './common/PartsArrayAction.vue';
-import { FunkEmits } from '@composables/FunkEmits';
+
 import { useOmikenStore } from '@composables/FunkOmiken';
 
 const props = defineProps<{

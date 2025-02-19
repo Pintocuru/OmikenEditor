@@ -7,7 +7,7 @@
      <!-- TODO DialogTypes は廃止、代わりにダイアログでorderを編集するものを新規作成 -->
      <DialogTypes :rule="rule" :Omiken="items.Omiken" />
      {{ rule.name }}
-     <PartsNameEditor type="rules" :currentItem="rule" />
+     <PartsNameEditor type="rules" :item="rule" />
 
      <v-chip label class="ml-4"> {{ rule.enables.length }} items </v-chip>
 
@@ -51,15 +51,15 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { CategoryActive, RulesTypeMap, OmikenType, RulesType, OmikenTypeMap, RuleCategory } from '@type';
+import { CategoryActive, RulesTypeMap, RuleCategory } from '@type';
 import PartsArrayAction from '@common/PartsArrayAction.vue';
 import DialogTypes from '@components/DialogTypes.vue';
 import ListRulesOmikujiView from '@components/ListRules/ListRulesOmikujis.vue';
 import ListRulesTabs from '@components/ListRules/ListRulesTabs.vue';
 import PartsNameEditor from '@common/PartsNameEditor.vue';
 import PartsToolbarColor from '@common/PartsToolbarColor.vue';
-import { FunkEmits } from '@composables/FunkEmits';
-import { useOmikenStore } from '@composables/FunkOmiken';
+
+import { useOmikenStore } from '@store/UseOmikenStore';
 
 const props = defineProps<{
  categoryActive: CategoryActive<'rules'>;

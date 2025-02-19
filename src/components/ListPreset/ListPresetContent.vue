@@ -75,7 +75,7 @@
 
 <script setup lang="ts">
 import { AppEditorType, CategoryActive, OmikenCategory, ListEntryType, OmikenEntry, PresetOmikenType } from '@type';
-import { FunkEmits } from '@composables/FunkEmits';
+
 import { FunkPresets } from '@composables/FunkPresets';
 import { computed, ref } from 'vue';
 import { MySwal } from '@common/partsMySwal';

@@ -44,7 +44,7 @@
 <script setup lang="ts">
 import { PlaceType, ListEntryType, OmikenEntry, OmikenCategory } from '@type';
 import PartsArrayRemovePlace from '@common/PartsArrayRemovePlace.vue';
-import { FunkEmits } from '@composables/FunkEmits';
+
 import draggable from 'vuedraggable';
 
 const props = defineProps<{

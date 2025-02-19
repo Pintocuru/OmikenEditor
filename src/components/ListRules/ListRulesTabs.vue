@@ -27,7 +27,7 @@
 
   <!-- comment:Threshold -->
   <v-tabs-window-item value="threshold">
-   <ThresholdMain :item="rule" mode="rules" type="comment" @update:Omiken="updateOmiken" />
+   <ThresholdMain :item="rule" mode="rules" type="comment" />
   </v-tabs-window-item>
 
   <!-- タイマー設定のコンテンツ -->
@@ -75,7 +75,7 @@
 import { computed, ref, watch } from 'vue';
 import { OmikenEntry, RulesType, RuleCategory } from '@type';
 import ThresholdMain from '@components/DialogThreshold/DialogThreshold.vue';
-import { FunkEmits } from '@composables/FunkEmits';
+
 import { FunkRules } from '@composables/FunkRules';
 
 const props = defineProps<{

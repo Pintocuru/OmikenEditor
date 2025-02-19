@@ -18,7 +18,7 @@
 <script setup lang="ts">
 import { ref, computed, inject, type Ref } from 'vue';
 import { OmikenEntry, OmikujiType, AppEditorType, PlaceType, OmikenCategory, OmikenRulesType } from '@type';
-import { FunkEmits } from '@composables/FunkEmits';
+
 import { MySwal } from '@common/partsMySwal';
 
 const props = defineProps<{

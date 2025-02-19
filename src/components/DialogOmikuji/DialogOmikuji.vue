@@ -1,20 +1,20 @@
 <!-- src/components/DialogOmikuji/DialogOmikuji.vue -->
 <template>
- <v-card v-if="currentItem" style="height: 80vh; overflow-y: auto">
+ <v-card v-if="entry" style="height: 80vh; overflow-y: auto">
   <!-- ツールバーの変更 -->
   <v-toolbar :color="themeColor" density="comfortable">
    <v-toolbar-title>
-    {{ currentItem.name }}
+    {{ entry.name }}
     <!-- 名前・説明の編集 -->
-    <PartsNameEditor type="omikujis" :currentItem="currentItem" @update:Omiken="updateOmiken" />
+    <PartsNameEditor type="omikujis" :item="entry" />
    </v-toolbar-title>
    <template #append>
-    <span class="mr-2">ID : {{ currentItem?.id }}</span>
-    <PartsArrayAction editMode="omikujiAddDialog" :entry="currentItem" @update:Omiken="updateOmiken" />
+    <span class="mr-2">ID : {{ entry?.id }}</span>
+    <PartsArrayAction editMode="omikujiAddDialog" :entry="entry" />
    </template>
   </v-toolbar>
-  <v-card-text v-if="currentItem.description" class="text-subtitle-2">
-   {{ currentItem.description }}
+  <v-card-text v-if="entry.description" class="text-subtitle-2">
+   {{ entry.description }}
   </v-card-text>
 
   <!-- タブ -->
@@ -34,11 +34,9 @@
      <component
       :is="currentListComponent"
       :key="tab"
-      :currentItem="currentItem"
+      :currentItem="entry"
       v-model="tab"
       @update:modelValue="tab = $event"
-      @update:Omiken="updateOmiken"
-      @open-editor="openEditor"
      />
     </v-tabs-window>
    </v-form>
@@ -48,108 +46,82 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, Ref, ref } from 'vue';
-import { OmikenEntry, ListEntryType, OmikenCategory, AppEditorType } from '@type';
+import { computed, ref } from 'vue';
+import { OmikujiType } from '@type';
 import PartsArrayAction from '@common/PartsArrayAction.vue';
 import DialogOmikujiPost from '@components/DialogOmikuji/DialogOmikujiPost.vue';
-import DialogOmikujiThreshold from '@components/DialogOmikuji/DialogOmikujiThreshold.vue';
 import DialogOmikujiStatus from '@components/DialogOmikuji/DialogOmikujiStatus.vue';
 import DialogOmikujiPlaces from '@components/DialogOmikuji/DialogOmikujiPlaces.vue';
 import DialogOmikujiScripts from '@components/DialogOmikuji/DialogOmikujiScripts.vue';
 import PartsNameEditor from '@common/PartsNameEditor.vue';
 import { FunkOmikuji } from '@composables/FunkOmikuji';
-import { FunkEmits } from '@composables/FunkEmits';
 
 // props/emits
 const props = defineProps<{
- entry: ListEntryType<'omikujis'> | null;
+ entry: OmikujiType;
 }>();
 
-const emit = defineEmits<{
- (e: 'update:Omiken', payload: OmikenEntry<OmikenCategory>): void;
- (e: 'open-editor', editorItem: ListEntryType<OmikenCategory>): void;
-}>();
+// タブの値の型定義
+type TabValue = 'post' | 'addStatus' | 'places' | 'scriptParams';
 
-// inject
-const AppEditor = inject<Ref<AppEditorType>>('AppEditorKey');
-const omikujis = computed(() => AppEditor?.value.Omiken.omikujis ?? {});
-
-// コンポーザブル:FunkEmits
-const { updateOmiken, openEditor } = FunkEmits(emit);
+// タブアイテムの型定義
+interface TabItem {
+ value: TabValue;
+ icon: string;
+ label: string;
+}
 
 // コンポーザブル:FunkOmikuji
 const { getPostTypeColor } = FunkOmikuji();
 
+// タブの状態管理
+const tab = ref<TabValue>('post');
+// 子コンポーネントの指定
+const currentListComponent = computed(() => componentMap[tab.value]);
+// postのonecommeで使われているBotKeyの色を取得
+const themeColor = computed(() => (props.entry ? getPostTypeColor(props.entry.post, true) : ''));
+
 // タブ
-const tab = ref<'post' | 'status' | 'places' | 'threshold' | 'scripts'>('post'); // タブの状態管理
-const tabs = [
+const tabs: TabItem[] = [
  { value: 'post', icon: 'mdi-message', label: 'メッセージ' },
- { value: 'status', icon: 'mdi-chart-bar', label: 'ステータス' },
+ { value: 'addStatus', icon: 'mdi-chart-bar', label: 'ステータス' },
  { value: 'places', icon: 'mdi-swap-horizontal', label: 'プレース' },
- { value: 'threshold', icon: 'mdi-tune', label: '条件設定' },
- { value: 'scripts', icon: 'mdi-script-text', label: 'スクリプト' }
+ { value: 'scriptParams', icon: 'mdi-script-text', label: 'スクリプト' }
 ];
 
-// 子コンポーネントの指定
-const currentListComponent = computed(() => {
- const componentMap = {
-  post: DialogOmikujiPost,
-  threshold: DialogOmikujiThreshold,
-  status: DialogOmikujiStatus,
-  places: DialogOmikujiPlaces,
-  scripts: DialogOmikujiScripts
- } as const;
+// コンポーネントマップ
+const componentMap = {
+ post: DialogOmikujiPost,
+ addStatus: DialogOmikujiStatus,
+ places: DialogOmikujiPlaces,
+ scriptParams: DialogOmikujiScripts
+} as const;
 
- return componentMap[tab.value];
-});
-
-// propsからデータを解読
-const currentItem = computed(() => (props.entry?.key && omikujis ? omikujis.value[props.entry.key as string] : null));
-
-// バッジの内容を取得する関数
-const getBadgeContent = (tabValue: string): string | number => {
- if (!currentItem.value) return '';
-
- switch (tabValue) {
-  case 'post':
-   return currentItem.value.post?.length || 0;
-  case 'places':
-   return currentItem.value.placeIds?.length || 0;
-  case 'threshold':
-  case 'status':
-  case 'scripts':
-   return '';
-  default:
-   return '';
- }
+// バッジ関連
+const badgeHandlers = {
+ post: (entry: OmikujiType) => ({
+  content: entry.post?.length || 0,
+  show: (entry.post?.length || 0) > 0
+ }),
+ addStatus: (entry: OmikujiType) => ({
+  content: '',
+  show: !!entry.addStatus || !!entry.addPoints
+ }),
+ places: (entry: OmikujiType) => ({
+  content: entry.placeIds?.length || 0,
+  show: (entry.placeIds?.length || 0) > 0
+ }),
+ scriptParams: (entry: OmikujiType) => ({
+  content: '',
+  show: !!entry.scriptParams
+ })
 };
 
-// バッジを表示するかどうかを判定する関数
-const hasContent = (tabValue: string): boolean => {
- if (!currentItem.value) return false;
+// バッジの内容を取得
+const getBadgeContent = (tabValue: TabValue): string | number =>
+ props.entry ? badgeHandlers[tabValue]?.(props.entry).content || '' : '';
 
- switch (tabValue) {
-  case 'post':
-   return (currentItem.value.post?.length || 0) > 0;
-  case 'places':
-   return (currentItem.value.placeIds?.length || 0) > 0;
-  case 'threshold':
-   return !!currentItem.value.threshold?.length;
-  case 'status':
-   return !!currentItem.value.status;
-  case 'scripts':
-   return !!currentItem.value.script?.scriptId;
-  default:
-   return false;
- }
-};
-
-// postのonecommeで使われているBotKeyの色を取得する
-const key = props.entry?.key;
-let themeColor: string;
-if (omikujis && typeof key === 'string' && omikujis.value[key]) {
- themeColor = getPostTypeColor(omikujis.value[key].post, true);
-} else {
- themeColor = '';
-}
+// バッジを表示するかどうか
+const hasContent = (tabValue: TabValue): boolean =>
+ props.entry ? badgeHandlers[tabValue]?.(props.entry).show || false : false;
 </script>

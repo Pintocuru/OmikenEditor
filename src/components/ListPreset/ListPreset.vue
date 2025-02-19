@@ -4,7 +4,6 @@
   v-if="props.categoryActive?.sub"
   :type="props.categoryActive.sub"
   :content="getContent"
-  @update:Omiken="updateOmiken"
   @update:OmikenPreset="updateOmikenPreset"
   @update:category="openList"
  />
@@ -14,7 +13,6 @@
 import { computed } from 'vue';
 import { AppEditorType, CategoryActive, OmikenEntry, PresetAnyType, PresetTypeMap } from '@type';
 import ListPresetContent from '@components/ListPreset/ListPresetContent.vue';
-import { FunkEmits } from '@composables/FunkEmits';
 
 // Props Emits
 const props = defineProps<{

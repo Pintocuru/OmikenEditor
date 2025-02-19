@@ -17,7 +17,8 @@ export type OmikenType = {
 };
 
 // 基本的なカテゴリー定義
-export type OmikenCategory = RuleCategory | 'omikujis' | 'places';
+export type OmikenCategory = RuleCategory | EventCategory;
+export type EventCategory = 'omikujis' | 'places';
 export type OmikenTypeMap<T extends OmikenCategory> = {
  comments: CommentRulesType;
  timers: TimerRulesType;

@@ -65,7 +65,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
 import { OmikenEntry, OmikenCategory, ListEntryType, TypesType, OmikenType, RulesType } from '@type';
-import { FunkEmits } from '@composables/FunkEmits';
+
 import { FunkTypes } from '@composables/FunkTypes';
 import Draggable from 'vuedraggable';
 
