@@ -1,7 +1,7 @@
 <!-- src/components/DialogOmikuji/DialogOmikujiStatus.vue -->
 <template>
  <v-select
-  v-model="currentItem.placeIds"
+  v-model="item.placeIds"
   :items="placeItems"
   label="プレースホルダー"
   item-title="name"
@@ -9,7 +9,7 @@
   multiple
   chips
   clearable
-  @update:modelValue="updateOmikenEntry('omikujis', currentItem)"
+  @update:modelValue="updateOmiken({ type: 'omikujis', updates: [item] })"
  />
  <v-sheet>
   <v-btn block @click="addItem('places')" color="primary" variant="flat" class="mt-6">
@@ -20,46 +20,41 @@
 
 <script setup lang="ts">
 import { computed, inject, Ref } from 'vue';
-import { OmikenCategory, ListEntryType, OmikujiType, OmikenEntry, AppEditorType, generateUniqueKey } from '@type';
+import { OmikujiType, AppEditorType, generateUniqueKey, EventCategory, DialogTabValue } from '@type';
+import { useOmikenStore } from '@/store/UseOmikenStore';
+import { UseUIStore } from '@/store/UseUIStore';
 
 const props = defineProps<{
- currentItem: OmikujiType;
- modelValue: 'places' | 'post' | 'threshold' | 'status' | 'scripts';
+ item: OmikujiType;
+ modelValue: DialogTabValue;
 }>();
 
-const emit = defineEmits<{
- (e: 'update:Omiken', payload: OmikenEntry<OmikenCategory>): void;
- (e: 'open-editor', editorItem: ListEntryType<OmikenCategory>): void;
-}>();
+// pinia:OmikenStore
+const { updateOmiken, getOmikenItems } = useOmikenStore();
+// pinia:UseUIStore
+const { updateDialog } = UseUIStore();
 
-// inject
-const AppEditor = inject<Ref<AppEditorType>>('AppEditorKey');
-const places = computed(() => AppEditor?.value.Omiken.places || {});
-
-// コンポーザブル:FunkEmits
-const { openEditorItem, updateOmikenEntry } = FunkEmits(emit);
+const places = computed(() => getOmikenItems('places') || {});
 
 // placeItems の実装を修正
 const placeItems = computed(() => {
- if (!places.value) return [];
  return Object.entries(places.value).map(([id, place]) => ({
   id: place.id,
   name: place.name
  }));
 });
 
-const addItem = (type: OmikenCategory) => {
+const addItem = (type: EventCategory) => {
  // 新規のプレースホルダーを追加
  const id = generateUniqueKey();
- emit('update:Omiken', {
-  type,
-  addKeys: [{ id, name: 'NewPlace' }]
- });
+ updateOmiken({ type, addKeys: [{ id, name: 'NewPlace' }] });
+
  // プレースホルダーを追加
- const newItem = props.currentItem;
+ const newItem = props.item;
  newItem.placeIds.push(id);
- updateOmikenEntry('omikujis', newItem);
+ updateOmiken({ type: 'omikujis', updates: [newItem] });
+
  // エディタを開く
- openEditorItem(type, id);
+ updateDialog({ type, id });
 };
 </script>

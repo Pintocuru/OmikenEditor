@@ -34,7 +34,7 @@
       <v-list-item-title>
        <span
         :class="{ 'cursor-pointer': placeholder.isEditable }"
-        @click="placeholder.isEditable && openEditorItem('places', placeholder.key)"
+        @click="placeholder.isEditable && updateDialog({ type: 'places', id: placeholder.id })"
        >
         <<{{ placeholder.id }}>>
        </span>
@@ -45,16 +45,16 @@
      </v-list-item>
     </v-list>
 
-    <div v-if="availablePlaceholders.length === 0 && isListType(currentItem, 'omikujis')">
+    <div v-if="availablePlaceholders.length === 0 && props.type === 'omikujis'">
      <span
       @click="$emit('update:modelValue', 'places')"
       class="clickable-tag text-primary font-weight-medium pa-1 rounded mx-1"
       >【プレース】</span
      >
      <span
-      @click="$emit('update:modelValue', 'scripts')"
+      @click="$emit('update:modelValue', 'scriptParams')"
       class="clickable-tag text-primary font-weight-medium pa-1 rounded mx-1"
-      >【スクリプト】</span
+      >【アドオン用パラメータ】</span
      >
      から選ぶと、プレースホルダーを使用できるようになります。
     </div>
@@ -64,38 +64,41 @@
 </template>
 
 <script setup lang="ts">
-import { inject, Ref, computed } from 'vue';
+import { computed } from 'vue';
 import {
- OmikenCategory,
- ListEntryType,
- OmikujiType,
- OmikenEntry,
- AppEditorType,
  PlaceValueType,
- PlaceType
+ EventCategory,
+ OmikenTypeMap,
+ ScriptParam,
+ ParamType,
+ ruleCategories,
+ ScriptType,
+ DialogTabValue
 } from '@type';
-
-import { FunkTypes } from '@composables/FunkTypes';
+import { useOmikenStore } from '@/store/UseOmikenStore';
+import { UseUIStore } from '@/store/UseUIStore';
 
 const props = defineProps<{
- currentItem: OmikujiType | PlaceType;
- modelValue?: 'places' | 'post' | 'threshold' | 'status' | 'scripts';
+ type: EventCategory;
+ item: OmikenTypeMap<EventCategory>;
+ modelValue?: DialogTabValue;
+ // TODO placeでも使うのでemitは必要
 }>();
 
 const emit = defineEmits<{
- (e: 'update:modelValue', value: 'places' | 'post' | 'threshold' | 'status' | 'scripts'): void;
- (e: 'update:Omiken', payload: OmikenEntry<OmikenCategory>): void;
- (e: 'open-editor', editorItem: ListEntryType<OmikenCategory>): void;
+ (e: 'update:modelValue', value: DialogTabValue): void;
 }>();
 
-// inject
-const AppEditor = inject<Ref<AppEditorType>>('AppEditorKey');
-const places = computed(() => AppEditor?.value.Omiken.places ?? {});
-const Scripts = AppEditor?.value.Scripts;
+// pinia:OmikenStore
+const { getOmikenItems, getOmikenPresets, getRulesAll } = useOmikenStore();
+// pinia:UseUIStore
+const { updateDialog } = UseUIStore();
 
-// コンポーザブル:FunkEmits
-const { isListType } = FunkTypes();
-const { openEditorItem } = FunkEmits(emit);
+// inject
+const places = computed(() => getOmikenItems('places') || {});
+const rules = computed(() => getRulesAll() || {});
+const Charas = computed(() => getOmikenPresets('Charas') || {});
+const Scripts = computed(() => getOmikenPresets('Scripts') || {});
 
 // 基本のプレースホルダーのみを返すcomputed
 const basicPlaceholders = [
@@ -109,15 +112,28 @@ const basicPlaceholders = [
  { id: 'round', value: 18, description: 'ユーザーがこれまでコメントした配信枠の数', isEditable: false, key: '' }
 ];
 
+// アドオンのパラメータを取得する
+function getScriptParams(omikujiId: string): Array<ScriptParam<ParamType>> | null {
+ const matchedRules = ruleCategories.flatMap((category) =>
+  Object.values(getRulesAll()[category]).filter((rule) => rule.enables.some((enable) => enable.omikujiId === omikujiId))
+ );
+ const scriptId = matchedRules[0].script?.scriptId;
+ // マッチしたrule.enablesが1つでない場合は設定できない
+ if (matchedRules.length !== 1 || !scriptId) return null;
+ return Scripts.value[scriptId].params ?? null;
+}
+
 // 使用可能なプレースホルダーをまとめて取得
 const availablePlaceholders = computed(() => {
  const placeholders = [];
 
  // スクリプトのプレースホルダー
- if (isListType(props.currentItem, 'omikujis')) {
-  if (props.currentItem.script?.scriptId && Scripts?.[props.currentItem.script.scriptId]) {
+ if (props.type === 'omikujis') {
+  const params = getScriptParams(props.item.id);
+
+  if (props.item.script?.scriptId && Scripts?.[props.item.script.scriptId]) {
    placeholders.push(
-    ...Scripts[props.currentItem.script.scriptId].placeholders.map((p) => ({
+    ...Scripts[props.item.script.scriptId].placeholders.map((p) => ({
      id: p.id,
      value: p.value,
      description: p.description,
@@ -129,8 +145,8 @@ const availablePlaceholders = computed(() => {
  }
 
  // カスタムプレースホルダー
- if (places.value && props.currentItem.placeIds) {
-  props.currentItem.placeIds.forEach((id) => {
+ if (places.value && props.item.placeIds) {
+  props.item.placeIds.forEach((id) => {
    const place = places.value[id];
    if (place) {
     placeholders.push({

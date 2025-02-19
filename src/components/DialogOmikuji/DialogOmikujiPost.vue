@@ -2,14 +2,15 @@
 <template>
  <!-- プレースホルダーの説明 -->
  <DialogOmikujiPostDescription
-  :currentItem="currentItem"
+  type="omikujis"
+  :item="item"
   v-model="tab"
   @update:modelValue="$emit('update:modelValue', $event)"
  />
 
  <!-- postメイン -->
  <v-expansion-panels multiple>
-  <v-expansion-panel v-for="(post, index) in currentItem.post" :key="index">
+  <v-expansion-panel v-for="(post, index) in item.post" :key="index">
    <v-expansion-panel-title hide-actions :color="getPostColor(post)">
     <v-toolbar density="compact" color="transparent">
      <!-- post種類 -->
@@ -37,20 +38,14 @@
        label="投稿の種類"
        item-title="text"
        item-value="value"
-       @update:modelValue="updateOmikenEntry('omikujis', currentItem)"
+       @update:modelValue="updateOmikenOmikuji(item)"
       >
       </v-select>
      </v-col>
 
      <v-col cols="12" sm="9">
       <!-- メッセージ内容編集 -->
-      <v-text-field
-       v-model="post.content"
-       label="内容"
-       rows="2"
-       auto-grow
-       @input="updateOmikenEntry('omikujis', currentItem)"
-      />
+      <v-text-field v-model="post.content" label="内容" rows="2" auto-grow @input="updateOmikenOmikuji(item)" />
      </v-col>
     </v-row>
 
@@ -64,7 +59,7 @@
        item-title="text"
        item-value="value"
        density="compact"
-       @update:modelValue="updateOmikenEntry('omikujis', currentItem)"
+       @update:modelValue="updateOmikenOmikuji(item)"
       >
       </v-select>
      </v-col>
@@ -77,7 +72,7 @@
        item-title="text"
        item-value="value"
        density="compact"
-       @update:modelValue="updateOmikenEntry('omikujis', currentItem)"
+       @update:modelValue="updateOmikenOmikuji(item)"
       >
       </v-select>
      </v-col>
@@ -92,7 +87,7 @@
        item-value="value"
        density="compact"
        clearable
-       @update:modelValue="updateOmikenEntry('omikujis', currentItem)"
+       @update:modelValue="updateOmikenOmikuji(item)"
       >
       </v-select>
      </v-col>
@@ -110,7 +105,7 @@
        min="-1"
        max="10"
        step="0.1"
-       @update:modelValue="updateOmikenEntry('omikujis', currentItem)"
+       @update:modelValue="updateOmikenOmikuji(item)"
       />
      </v-col>
      <v-col cols="12" sm="3">
@@ -122,7 +117,7 @@
        step="0.1"
        min="-1"
        density="compact"
-       @input="updateOmikenEntry('omikujis', currentItem)"
+       @input="updateOmikenOmikuji(item)"
       >
       </v-text-field>
      </v-col>
@@ -142,7 +137,7 @@
         label="ジェネレーターに渡す引数"
         rows="2"
         auto-grow
-        @input="updateOmikenEntry('omikujis', currentItem)"
+        @input="updateOmikenOmikuji(item)"
        />
       </v-col>
      </v-row>
@@ -164,7 +159,7 @@
      <v-col cols="6">
       <v-sheet class="d-flex justify-end">
        <!-- 複製・削除ボタン -->
-       <PartsArrayRemove type="omikujis" :currentItem="currentItem" :array="currentItem.post" :index="index" />
+       <PartsArrayRemove type="omikujis" :currentItem="item" :array="item.post" :index="index" />
       </v-sheet>
      </v-col>
     </v-row>
@@ -179,31 +174,25 @@
 </template>
 
 <script setup lang="ts">
-import { inject, ref, Ref } from 'vue';
-import { OmikenCategory, ListEntryType, OmikujiType, OmikenEntry, OneCommePostType, AppEditorType } from '@type';
+import { computed, ref } from 'vue';
+import { OmikujiType, OneCommePostType, DialogTabValue } from '@type';
 import DialogOmikujiPostDescription from '@components/DialogOmikuji/DialogOmikujiPostDescription.vue';
 import PartsArrayRemove from '@common/PartsArrayRemove.vue';
 import { FunkOmikuji } from '@composables/FunkOmikuji';
+import { useOmikenStore } from '@/store/UseOmikenStore';
 
 const props = defineProps<{
- currentItem: OmikujiType;
- modelValue: 'places' | 'post' | 'threshold' | 'status' | 'scripts';
+ item: OmikujiType;
+ modelValue: DialogTabValue;
 }>();
 
-const emit = defineEmits<{
- (e: 'update:modelValue', value: 'places' | 'post' | 'threshold' | 'status' | 'scripts'): void;
- (e: 'update:Omiken', payload: OmikenEntry<OmikenCategory>): void;
- (e: 'open-editor', editorItem: ListEntryType<OmikenCategory>): void;
-}>();
+// pinia:OmikenStore
+const { updateOmiken, getOmikenPresets } = useOmikenStore();
 
 // inject
-const AppEditor = inject<Ref<AppEditorType>>('AppEditorKey');
-const Charas = AppEditor?.value.Charas;
+const Charas = computed(() => getOmikenPresets('Charas') || {});
 
-// コンポーザブル:FunkEmits
-const { updateOmiken, openEditor, updateOmikenEntry } = FunkEmits(emit);
-
-const tab = ref<'post' | 'threshold' | 'status' | 'places' | 'scripts'>(props.modelValue); // タブの状態管理
+const tab = ref<DialogTabValue>(props.modelValue); // タブの状態管理
 
 const {
  // Post type utilities
@@ -220,16 +209,17 @@ const {
 } = FunkOmikuji();
 
 // マニアックな設定を表示するか
-const showAdvanced = ref(props.currentItem.post.some(isAdvancedData));
+const showAdvanced = ref(props.item.post.some(isAdvancedData));
 
 function isAdvancedData(post: OneCommePostType) {
  return post.isSilent || post.generatorParam;
 }
 
 // CharaParty
+// TODO:Charasのpartyは廃止、settings.partyを使う
 const charaParty = (botKey?: string) => {
- if (!botKey || !Charas?.[botKey]?.party) return [];
- return Charas[botKey].party;
+ if (!botKey || !Charas.value[botKey]?.party) return [];
+ return Charas.value[botKey].party;
 };
 
 // postに追加
@@ -243,8 +233,12 @@ const addPost = (position = 'bottom') => {
   content: '<<user>>の新しいメッセージ',
   party: ''
  };
- props.currentItem.post.push(newPost);
+ props.item.post.push(newPost);
+ updateOmikenOmikuji(props.item);
+};
 
- updateOmikenEntry('omikujis', props.currentItem);
+// updateOmiken
+const updateOmikenOmikuji = (newItem: OmikujiType) => {
+ updateOmiken({ type: 'omikujis', updates: [newItem] });
 };
 </script>

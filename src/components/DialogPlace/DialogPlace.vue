@@ -21,7 +21,7 @@
    </v-sheet>
 
    <!-- プレースホルダーの説明 -->
-   <DialogOmikujiPostDescription :currentItem="entry" />
+   <DialogOmikujiPostDescription type="places" :item="entry" />
    <!-- プレースホルダー -->
    <v-card>
     <v-sheet class="d-flex ga-2 justify-end">

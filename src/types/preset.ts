@@ -54,7 +54,7 @@ export interface CharaType extends PresetBaseType {
 
 // Scripts:アドオン用型定義
 export interface ScriptType extends PresetBaseType {
- OmikujiFunc: OmikujiFuncParamType; // おみくじ実行時の関数
+ OmikujiFunc?: OmikujiFuncParamType; // おみくじ実行時の関数
  ApiCall?: ApiCallParamType; // API呼び出し時の関数
  settings: Array<ScriptParam<ParamType>>;
  params: Array<ScriptParam<ParamType>>;
@@ -92,7 +92,7 @@ export interface ApiCallReturnType {
 
 // gameのパラメータ設定用
 
-type ParamType = 'string' | 'number' | 'boolean'; // 型エイリアス
+export type ParamType = 'string' | 'number' | 'boolean'; // 型エイリアス
 export interface ScriptParam<T extends ParamType> extends BaseType {
  type: T;
  value: T extends 'string' ? string : T extends 'number' ? number : boolean;

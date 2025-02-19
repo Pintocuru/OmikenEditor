@@ -1,31 +1,39 @@
 <!-- src/components/DialogOmikuji/DialogOmikujiStatus.vue -->
 <template>
- ユーザーに {{ currentItem.status }} の内部ステータスを設定・変更します
+ ユーザーに {{ item.addStatus }} の内部ステータスを設定・変更します
+ <!-- visit.status -->
  <v-text-field
-  v-model="currentItem.status"
+  v-model="item.addStatus"
   label="ステータス"
   item-title="text"
   item-value="value"
   dense="compact"
   clearable
-  @update:modelValue="updateOmikenEntry('omikujis', currentItem)"
+  @update:modelValue="updateOmiken({ type: 'omikujis', updates: [item] })"
+ >
+ </v-text-field>
+ <!-- visit.point -->
+ <v-text-field
+  v-model="item.addPoints"
+  label="ポイント"
+  item-title="text"
+  item-value="value"
+  dense="compact"
+  clearable
+  @update:modelValue="updateOmiken({ type: 'omikujis', updates: [item] })"
  >
  </v-text-field>
 </template>
 
 <script setup lang="ts">
-import { OmikenCategory, ListEntryType, OmikujiType, OmikenEntry, AppEditorType, ScriptType } from '@type';
+import { OmikujiType } from '@type';
+import { useOmikenStore } from '@/store/UseOmikenStore';
 
 const props = defineProps<{
- currentItem: OmikujiType;
+ item: OmikujiType;
  modelValue: 'places' | 'post' | 'threshold' | 'status' | 'scripts';
 }>();
 
-const emit = defineEmits<{
- (e: 'update:Omiken', payload: OmikenEntry<OmikenCategory>): void;
- (e: 'open-editor', editorItem: ListEntryType<OmikenCategory>): void;
-}>();
-
-// コンポーザブル:FunkEmits
-const { updateOmikenEntry } = FunkEmits(emit);
+// pinia:OmikenStore
+const { updateOmiken } = useOmikenStore();
 </script>

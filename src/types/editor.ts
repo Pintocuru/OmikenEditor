@@ -49,3 +49,6 @@ export type OmikenEntry<T extends OmikenCategory> = {
 export type EditorSettingsType = {
  party: string[]; // キャラクター表示時、WordPartyを発動させるキー群
 };
+
+// ダイアログ用 omikujis/places のタブの型定義
+export type DialogTabValue = 'post' | 'addStatus' | 'places' | 'scriptParams';

@@ -4,11 +4,14 @@ import {
  OmikenEntry,
  AppEditorType,
  PresetOmikenType,
- OmikenSchema,
  OmikenType,
  OmikenCategory,
+ PresetCategory,
+ ruleCategories,
+ RuleCategory,
  OmikenTypeMap,
- EditorSettingsType
+ RulesTypeMap,
+ PresetTypeMap
 } from '@type';
 import { AppEditorFetch } from '@composables/FunkJSON';
 import { FunkOmikenUpdater } from '@composables/FunkOmikenUpdater';
@@ -23,8 +26,21 @@ export const useOmikenStore = defineStore('omikenStore', () => {
  const isAppEditorLoading = ref(true); // 読み込み判定のref
 
  // getter
- const getOmikenItems = (type: OmikenCategory): OmikenType[OmikenCategory] => {
-  return AppEditor.value.Omiken[type] || {};
+ const getOmikenItems = <T extends OmikenCategory>(type: T): Record<string, OmikenTypeMap<T>> => {
+  return (AppEditor.value.Omiken[type] as Record<string, OmikenTypeMap<T>>) || {};
+ };
+
+ const getOmikenPresets = <T extends PresetCategory>(type: T): Record<string, PresetTypeMap<T>> => {
+  return (AppEditor.value[type] as Record<string, PresetTypeMap<T>>) || {};
+ };
+
+ // すべてのrulesを取得
+ const getRulesAll = () => {
+  const allRules = {} as Record<RuleCategory, Record<string, RulesTypeMap<RuleCategory>>>;
+  ruleCategories.forEach((category) => {
+   allRules[category] = AppEditor.value.Omiken[category] || {};
+  });
+  return allRules;
  };
 
  // Omikenの更新
@@ -80,6 +96,8 @@ export const useOmikenStore = defineStore('omikenStore', () => {
   updateOmikenPresetData,
   AppEditorInitialize,
   // getter
-  getOmikenItems
+  getOmikenItems,
+  getOmikenPresets,
+  getRulesAll
  };
 });

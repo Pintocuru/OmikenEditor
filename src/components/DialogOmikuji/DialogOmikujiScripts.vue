@@ -10,7 +10,7 @@
     item-value="value"
     dense="compact"
     clearable
-    @update:modelValue="updateOmikenEntry('omikujis', currentItem)"
+    @update:modelValue="updateOmikenEntry('omikujis', item)"
    />
   </v-col>
  </v-row>
@@ -61,34 +61,27 @@
 
 <script setup lang="ts">
 import { computed, inject, ref, Ref, watch } from 'vue';
-import { OmikenCategory, ListEntryType, OmikujiType, OmikenEntry, AppEditorType } from '@type';
-
+import { OmikenCategory, ListEntryType, OmikujiType, OmikenEntry, AppEditorType, DialogTabValue } from '@type';
 import DialogOmikujiScriptsField from '@components/DialogOmikuji/DialogOmikujiScriptsField.vue';
+import { useOmikenStore } from '@/store/UseOmikenStore';
 
 const props = defineProps<{
- currentItem: OmikujiType;
- modelValue: 'places' | 'post' | 'threshold' | 'status' | 'scripts';
+ item: OmikujiType;
+ modelValue: DialogTabValue;
 }>();
 
-const emit = defineEmits<{
- (e: 'update:Omiken', payload: OmikenEntry<OmikenCategory>): void;
- (e: 'open-editor', editorItem: ListEntryType<OmikenCategory>): void;
-}>();
+// pinia:OmikenStore
+const { updateOmiken, getOmikenPresets } = useOmikenStore();
 
 // inject
 const AppEditor = inject<Ref<AppEditorType>>('AppEditorKey');
 const Scripts = AppEditor?.value.Scripts;
 
-// コンポーザブル:FunkEmits
-const { updateOmikenEntry } = FunkEmits(emit);
-
 // 詳細設定の表示状態
 const showAdvanced = ref(false);
 
 // 通常パラメータと詳細パラメータを分離
-const normalParams = computed(() => selectedScript.value?.scriptParams?.filter((param) => !param.isEver) || []);
-
-const advancedParams = computed(() => selectedScript.value?.scriptParams?.filter((param) => param.isEver) || []);
+const normalParams = computed(() => selectedScript.value?.params);
 
 // スクリプトの選択項目を生成
 const scriptItems = computed(() => {
@@ -100,8 +93,8 @@ const scriptItems = computed(() => {
 
 // 選択されているスクリプトの情報を取得
 const selectedScript = computed(() => {
- if (!props.currentItem.script || !Scripts) return null;
- return Scripts[props.currentItem.script.scriptId];
+ if (!props.item.script || !Scripts) return null;
+ return Scripts[props.item.script.scriptId];
 });
 
 // スクリプトパラメータの値を管理
@@ -110,19 +103,19 @@ const scriptParamValues = ref<{ [key: string]: string | number | boolean }>({});
 // 選択されているスクリプトIDを管理
 const selectedScriptId = computed({
  get() {
-  return props.currentItem.script?.scriptId || '';
+  return props.item.script?.scriptId || '';
  },
  set(newValue: string) {
-  if (props.currentItem) {
+  if (props.item) {
    // `params` がオプショナルなので空配列をデフォルトで設定
-   props.currentItem.script = {
-    ...props.currentItem.script, // 他のプロパティはそのままに
+   props.item.script = {
+    ...props.item.script, // 他のプロパティはそのままに
     scriptId: newValue,
-    params: props.currentItem.script?.params ?? {} // `params` がない場合、空配列を使用
+    params: props.item.script?.params ?? {} // `params` がない場合、空配列を使用
    };
 
    // 更新を反映
-   updateOmikenEntry('omikujis', props.currentItem);
+   updateOmikenEntry('omikujis', props.item);
   }
  }
 });
@@ -133,7 +126,7 @@ watch(
  (newScript) => {
   if (!newScript || !newScript.scriptParams) return;
 
-  const existingParams = props.currentItem.script?.params || {};
+  const existingParams = props.item.script?.params || {};
 
   newScript.scriptParams.forEach((param) => {
    let value: string | number | boolean;
@@ -162,23 +155,23 @@ watch(
 
    scriptParamValues.value[param.id] = value;
 
-   if (!props.currentItem.script) {
-    props.currentItem.script = {
+   if (!props.item.script) {
+    props.item.script = {
      scriptId: selectedScriptId.value,
      params: {}
     };
    }
-   props.currentItem.script.params[param.id] = String(value);
+   props.item.script.params[param.id] = String(value);
   });
 
-  updateOmikenEntry('omikujis', props.currentItem);
+  updateOmikenEntry('omikujis', props.item);
  },
  { immediate: true }
 );
 
 // 更新ハンドラの追加
 const updateScriptParam = (paramId: string, value: string | number | boolean | null) => {
- if (!props.currentItem.script) return;
+ if (!props.item.script) return;
  if (value === null) return;
 
  // 選択されているスクリプトのパラメータ定義を取得
@@ -205,10 +198,10 @@ const updateScriptParam = (paramId: string, value: string | number | boolean | n
    convertedValue = String(value);
  }
 
- props.currentItem.script.params = {
-  ...props.currentItem.script.params,
+ props.item.script.params = {
+  ...props.item.script.params,
   [paramId]: convertedValue
  };
- updateOmikenEntry('omikujis', props.currentItem);
+ updateOmikenEntry('omikujis', props.item);
 };
 </script>

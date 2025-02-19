@@ -29,18 +29,15 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import type { OmikenCategory, OmikenEntry, PlaceType, PlaceValueType } from '@type';
+import { PlaceType, PlaceValueType } from '@type';
+import { useOmikenStore } from '@/store/UseOmikenStore';
 
 const props = defineProps<{
  currentItem: PlaceType;
 }>();
 
-const emit = defineEmits<{
- (e: 'update:Omiken', payload: OmikenEntry<OmikenCategory>): void;
-}>();
-
-// コンポーザブル:FunkEmits
-const { updateOmiken, updateOmikenEntry } = FunkEmits(emit);
+// pinia:OmikenStore
+const { updateOmiken } = useOmikenStore();
 
 const dialog = ref(false);
 const editingText = ref('');
@@ -72,10 +69,7 @@ const handleSave = () => {
   });
 
  // Omikenエントリを更新
- updateOmikenEntry('places', {
-  ...props.currentItem,
-  values
- });
+ updateOmiken({ type: 'places', updates: [{ ...props.currentItem, values }] });
 
  // ダイアログを閉じる
  dialog.value = false;

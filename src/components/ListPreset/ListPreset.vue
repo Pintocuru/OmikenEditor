@@ -83,9 +83,12 @@ const props = defineProps<{
 
 // Computed
 const type = computed(() => props.categoryActive.sub);
-const typeName = computed(() => map[type.value]);
+const typeName = computed(() => map[type.value ?? 'Presets']);
 const map = { Presets: 'おみくじデータ', Charas: 'キャラクター', Scripts: 'アドオン' } as const;
 
 // Composables
-const { selectTags, uniqueTags, filterPresets, applyPreset, getPresetsImage } = FunkPresets(type.value, props.items);
+const { selectTags, uniqueTags, filterPresets, applyPreset, getPresetsImage } = FunkPresets(
+ type.value ?? 'Presets',
+ props.items
+);
 </script>

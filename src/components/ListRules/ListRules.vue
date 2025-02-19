@@ -32,7 +32,7 @@
 
   <v-expand-transition>
    <div v-show="uiState.expandedPanels.includes(rule.id)">
-    <ListRulesTabs :rule="rule" :category="categoryActive.sub" @showWeightEdit="isWeightEdit" />
+    <ListRulesTabs :rule="rule" :category="categoryActive.sub ?? 'comments'" @showWeightEdit="isWeightEdit" />
 
     <v-card-text>
      <v-row>
@@ -58,7 +58,6 @@ import ListRulesOmikujiView from '@components/ListRules/ListRulesOmikujis.vue';
 import ListRulesTabs from '@components/ListRules/ListRulesTabs.vue';
 import PartsNameEditor from '@common/PartsNameEditor.vue';
 import PartsToolbarColor from '@common/PartsToolbarColor.vue';
-
 import { useOmikenStore } from '@store/UseOmikenStore';
 
 const props = defineProps<{
@@ -69,7 +68,7 @@ const props = defineProps<{
 // pinia:omikenStore
 const omikenStore = useOmikenStore();
 
-const type = computed(() => props.categoryActive.sub);
+const type = computed(() => props.categoryActive.sub ?? 'comments');
 const uiState = ref({
  expandedPanels: [] as string[],
  showWeightEditor: false
@@ -79,11 +78,7 @@ const uiState = ref({
 const togglePanel = (ruleId: string) => {
  const { expandedPanels } = uiState.value;
  const index = expandedPanels.indexOf(ruleId);
- if (index >= 0) {
-  expandedPanels.splice(index, 1);
- } else {
-  expandedPanels.push(ruleId);
- }
+ index >= 0 ? expandedPanels.splice(index, 1) : expandedPanels.push(ruleId);
 };
 
 // ウェイト編集の表示制御

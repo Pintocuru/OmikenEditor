@@ -46,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import { PlaceType, ListEntryType, OmikenEntry, OmikenCategory } from '@type';
+import { PlaceType } from '@type';
 import PartsArrayRemovePlace from '@common/PartsArrayRemovePlace.vue';
 import { useOmikenStore } from '@/store/UseOmikenStore';
 import draggable from 'vuedraggable';

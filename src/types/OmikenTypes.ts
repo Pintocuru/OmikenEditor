@@ -37,7 +37,7 @@ type CommonRulesType = BaseType & {
  color: string;
  script?: {
   scriptId: string;
-  scriptParams: Array<ScriptParam<'string' | 'number' | 'boolean'>> | null; // 外部スクリプトに渡す引数(Scriptから取得する)
+  settings: Array<ScriptParam<'string' | 'number' | 'boolean'>> | null; // アドオンに渡す引数(Scriptから取得する)
  };
 };
 
@@ -78,7 +78,7 @@ export type RulesSubType<Condition extends ThresholdTypesMap<RuleCategory>> = {
 export type OmikujiType = BaseType & {
  addStatus?: `<<${string}>>` | string | null; // visit.statusの変更(nullで消去)
  addPoints?: `<<${string}>>` | string | null; // visit.pointの変更(nullで消去)
- scriptParams: Array<ScriptParam<'string' | 'number' | 'boolean'>> | null; // 外部スクリプトに渡す引数(Scriptから取得する)
+ scriptParams: Array<ScriptParam<'string' | 'number' | 'boolean'>> | null; // アドオンに渡す引数(Scriptから取得する)
  placeIds: string[]; // 使用するプレースホルダーのid
  post: OneCommePostType[];
 };

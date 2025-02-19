@@ -31,13 +31,7 @@
    <v-form @submit.prevent>
     <v-tabs-window v-model="tab">
      <!-- 各メニューの表示 -->
-     <component
-      :is="currentListComponent"
-      :key="tab"
-      :currentItem="entry"
-      v-model="tab"
-      @update:modelValue="tab = $event"
-     />
+     <component :is="currentListComponent" :key="tab" :item="entry" v-model="tab" @update:modelValue="tab = $event" />
     </v-tabs-window>
    </v-form>
   </v-card-text>
@@ -47,7 +41,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { OmikujiType } from '@type';
+import { DialogTabValue, OmikujiType } from '@type';
 import PartsArrayAction from '@common/PartsArrayAction.vue';
 import DialogOmikujiPost from '@components/DialogOmikuji/DialogOmikujiPost.vue';
 import DialogOmikujiStatus from '@components/DialogOmikuji/DialogOmikujiStatus.vue';
@@ -61,12 +55,9 @@ const props = defineProps<{
  entry: OmikujiType;
 }>();
 
-// タブの値の型定義
-type TabValue = 'post' | 'addStatus' | 'places' | 'scriptParams';
-
 // タブアイテムの型定義
 interface TabItem {
- value: TabValue;
+ value: DialogTabValue;
  icon: string;
  label: string;
 }
@@ -75,7 +66,7 @@ interface TabItem {
 const { getPostTypeColor } = FunkOmikuji();
 
 // タブの状態管理
-const tab = ref<TabValue>('post');
+const tab = ref<DialogTabValue>('post');
 // 子コンポーネントの指定
 const currentListComponent = computed(() => componentMap[tab.value]);
 // postのonecommeで使われているBotKeyの色を取得
@@ -118,10 +109,10 @@ const badgeHandlers = {
 };
 
 // バッジの内容を取得
-const getBadgeContent = (tabValue: TabValue): string | number =>
+const getBadgeContent = (tabValue: DialogTabValue): string | number =>
  props.entry ? badgeHandlers[tabValue]?.(props.entry).content || '' : '';
 
 // バッジを表示するかどうか
-const hasContent = (tabValue: TabValue): boolean =>
+const hasContent = (tabValue: DialogTabValue): boolean =>
  props.entry ? badgeHandlers[tabValue]?.(props.entry).show || false : false;
 </script>
