@@ -39,7 +39,7 @@ const { naviCategory } = UseUIStore();
 
 // APIから取得
 onMounted(async () => {
- // piniaの宣言
+ // AppEditorの初期化
  await AppEditorInitialize();
 });
 </script>
