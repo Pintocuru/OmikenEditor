@@ -1,6 +1,6 @@
 // src/types/editor.ts
-import { EventCategory, OmikenCategory, OmikenType, OmikenTypeMap, RuleCategory } from './OmikenZod';
-import { PresetCategory, PresetType } from './preset';
+import { BaseType, EventCategory, OmikenCategory, OmikenType, OmikenTypeMap, RuleCategory } from './OmikenZod';
+import { ParamType, PresetCategory, PresetType, ScriptParam } from './preset';
 
 // エディター用型定義
 
@@ -52,3 +52,9 @@ export type EditorSettingsType = {
 
 // ダイアログ用 omikujis/places のタブの型定義
 export type DialogTabValue = 'post' | 'addStatus' | 'places' | 'scriptParams';
+
+// プレースホルダーの説明文
+export type PlaceExplainType = BaseType & {
+ value: string | number | boolean;
+ dialogPlaceId: string | null;
+};

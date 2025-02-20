@@ -56,5 +56,5 @@ const props = defineProps<{
 }>();
 
 // pinia:OmikenStore
-const { AppEditor, isAppEditorLoading, updateOmiken } = useOmikenStore();
+const { updateOmiken } = useOmikenStore();
 </script>

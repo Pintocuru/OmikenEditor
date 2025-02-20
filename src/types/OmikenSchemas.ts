@@ -151,11 +151,13 @@ const omikujiPostArraySchema = OneCommePostSchema.array()
  .default([]);
 
 // omikuji:おみくじの型定義
+
 export const omikujiSchema = z.object({
  ...baseSchema.shape,
  addStatus: z.union([z.string(), z.null()]).optional().catch(undefined), // visit.statusの変更(nullで消去)
  addPoints: z.union([z.string(), z.null()]).optional().catch(undefined), // visit.pointの変更(nullで消去)
- scriptParams: z.array(ScriptParamSchema).nullable().catch(null), // ScriptParam<T>[] | null に対応
+ isRunScript: z.boolean().default(false).catch(false), // スクリプトを実行するか
+ scriptParams: z.record(z.string(), z.array(ScriptParamSchema)).nullable().default(null).catch(null), // Record<string, ScriptParam<ParamType>[]> | null に対応
  placeIds: z.array(z.string()).default([]).catch([]), // 使用するプレースホルダーのid
  post: omikujiPostArraySchema.catch((error) => {
   console.warn('Invalid omikuji.post:', error);

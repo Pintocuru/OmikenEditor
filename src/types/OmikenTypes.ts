@@ -1,6 +1,6 @@
 // src/types/OmikenTypes.ts
 import { CommentThreshold, MetaThreshold, ThresholdTypesMap, TimerThreshold } from './OmikenThresholdTypes';
-import { ScriptParam } from './preset';
+import { ParamType, ScriptParam } from './preset';
 
 // おみくじデータの型定義
 export type OmikenType = {
@@ -37,7 +37,7 @@ type CommonRulesType = BaseType & {
  color: string;
  script?: {
   scriptId: string;
-  settings: Array<ScriptParam<'string' | 'number' | 'boolean'>> | null; // アドオンに渡す引数(Scriptから取得する)
+  settings: ScriptParam<ParamType>[] | null; // アドオンに渡す引数(Scriptから取得する)
  };
 };
 
@@ -76,9 +76,10 @@ export type RulesSubType<Condition extends ThresholdTypesMap<RuleCategory>> = {
 
 // おみくじ型
 export type OmikujiType = BaseType & {
- addStatus?: `<<${string}>>` | string | null; // visit.statusの変更(nullで消去)
- addPoints?: `<<${string}>>` | string | null; // visit.pointの変更(nullで消去)
- scriptParams: Array<ScriptParam<'string' | 'number' | 'boolean'>> | null; // アドオンに渡す引数(Scriptから取得する)
+ addStatus?: string | null; // visit.statusの変更(nullで消去)
+ addPoints?: string | null; // visit.pointの変更(nullで消去)
+ isRunScript: boolean; // スクリプトを実行するか
+ scriptParams: Record<string, ScriptParam<ParamType>[]> | null; // アドオンに渡す引数(Scriptから取得する)
  placeIds: string[]; // 使用するプレースホルダーのid
  post: OneCommePostType[];
 };

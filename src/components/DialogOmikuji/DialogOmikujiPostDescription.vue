@@ -1,4 +1,4 @@
-<!-- src/components/DialogOmikuji/DialogOmikujiPostDescription.vue -->
+<!-- src/common/DialogOmikuji/DialogOmikujiPostDescription.vue -->
 <template>
  <v-row dense>
   <v-col cols="12">
@@ -33,8 +33,8 @@
      <v-list-item v-for="placeholder in availablePlaceholders" :key="placeholder.id">
       <v-list-item-title>
        <span
-        :class="{ 'cursor-pointer': placeholder.isEditable }"
-        @click="placeholder.isEditable && updateDialog({ type: 'places', id: placeholder.id })"
+        :class="{ 'cursor-pointer': placeholder.dialogPlaceId }"
+        @click="placeholder.dialogPlaceId && updateDialog({ type: 'places', id: placeholder.id })"
        >
         <<{{ placeholder.id }}>>
        </span>
@@ -69,11 +69,10 @@ import {
  PlaceValueType,
  EventCategory,
  OmikenTypeMap,
- ScriptParam,
- ParamType,
- ruleCategories,
- ScriptType,
- DialogTabValue
+ DialogTabValue,
+ OmikujiType,
+ PlaceExplainType,
+ ParamType
 } from '@type';
 import { useOmikenStore } from '@/store/UseOmikenStore';
 import { UseUIStore } from '@/store/UseUIStore';
@@ -90,14 +89,12 @@ const emit = defineEmits<{
 }>();
 
 // pinia:OmikenStore
-const { getOmikenItems, getOmikenPresets, getRulesAll } = useOmikenStore();
+const { getOmikenItems, getOmikenPresets } = useOmikenStore();
 // pinia:UseUIStore
 const { updateDialog } = UseUIStore();
 
 // inject
 const places = computed(() => getOmikenItems('places') || {});
-const rules = computed(() => getRulesAll() || {});
-const Charas = computed(() => getOmikenPresets('Charas') || {});
 const Scripts = computed(() => getOmikenPresets('Scripts') || {});
 
 // 基本のプレースホルダーのみを返すcomputed
@@ -112,35 +109,29 @@ const basicPlaceholders = [
  { id: 'round', value: 18, description: 'ユーザーがこれまでコメントした配信枠の数', isEditable: false, key: '' }
 ];
 
-// アドオンのパラメータを取得する
-function getScriptParams(omikujiId: string): Array<ScriptParam<ParamType>> | null {
- const matchedRules = ruleCategories.flatMap((category) =>
-  Object.values(getRulesAll()[category]).filter((rule) => rule.enables.some((enable) => enable.omikujiId === omikujiId))
- );
- const scriptId = matchedRules[0].script?.scriptId;
- // マッチしたrule.enablesが1つでない場合は設定できない
- if (matchedRules.length !== 1 || !scriptId) return null;
- return Scripts.value[scriptId].params ?? null;
-}
-
 // 使用可能なプレースホルダーをまとめて取得
 const availablePlaceholders = computed(() => {
- const placeholders = [];
+ const placeholders: PlaceExplainType[] = [];
 
  // スクリプトのプレースホルダー
  if (props.type === 'omikujis') {
-  const params = getScriptParams(props.item.id);
+  const item = props.item as OmikujiType;
+  const params = item.scriptParams;
 
-  if (props.item.script?.scriptId && Scripts?.[props.item.script.scriptId]) {
-   placeholders.push(
-    ...Scripts[props.item.script.scriptId].placeholders.map((p) => ({
-     id: p.id,
-     value: p.value,
-     description: p.description,
-     isEditable: false, // スクリプトは編集不可
-     key: '' // スクリプトにはキーは不要
-    }))
-   );
+  if (params) {
+   for (const key in params) {
+    if (Scripts.value[key]) {
+     placeholders.push(
+      ...Scripts.value[key].placeholders.map((p) => ({
+       id: p.id,
+       name: p.name,
+       description: p.description,
+       value: p.value,
+       dialogPlaceId: null
+      }))
+     );
+    }
+   }
   }
  }
 
@@ -151,10 +142,10 @@ const availablePlaceholders = computed(() => {
    if (place) {
     placeholders.push({
      id: place.name,
-     value: weightedRandom(place.values),
+     name: place.name,
      description: `【 ${place.values.length} items】 ${place.description}`,
-     isEditable: true, // Places は編集可能
-     key: place.id // open-editor 用のキー
+     value: weightedRandom(place.values),
+     dialogPlaceId: place.id // open-editor 用のキー
     });
    }
   });

@@ -189,7 +189,7 @@ const props = defineProps<{
 // pinia:OmikenStore
 const { updateOmiken, getOmikenPresets } = useOmikenStore();
 
-// inject
+// ref / computed
 const Charas = computed(() => getOmikenPresets('Charas') || {});
 
 const tab = ref<DialogTabValue>(props.modelValue); // タブの状態管理

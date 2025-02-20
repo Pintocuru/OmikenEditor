@@ -73,14 +73,13 @@ const props = defineProps<{
 // pinia:OmikenStore
 const { updateOmiken, getOmikenPresets } = useOmikenStore();
 
-// inject
-const AppEditor = inject<Ref<AppEditorType>>('AppEditorKey');
-const Scripts = AppEditor?.value.Scripts;
+// ref / computed
+const Scripts = computed(() => getOmikenPresets('Scripts') || {});
 
 // 詳細設定の表示状態
 const showAdvanced = ref(false);
 
-// 通常パラメータと詳細パラメータを分離
+// パラメータ
 const normalParams = computed(() => selectedScript.value?.params);
 
 // スクリプトの選択項目を生成
