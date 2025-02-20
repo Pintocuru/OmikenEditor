@@ -15,21 +15,21 @@ export type CriterionTypesMap<T extends RuleCategory> = ThresholdTypesMap<T>['cr
 
 // コメント用Threshold
 export interface CommentThreshold {
- type: 'comment';
+ type: 'comments';
  isAnd?: boolean; // 次の条件との関係 (true:AND/false:OR)
  criteria: CommentCriterion[];
 }
 
 // タイマー用Threshold
 export interface TimerThreshold {
- type: 'timer';
+ type: 'timers';
  isAnd?: boolean; // 次の条件との関係 (true:AND/false:OR)
  criteria: TimerCriterion[];
 }
 
 // メタ用Threshold
 export interface MetaThreshold {
- type: 'meta';
+ type: 'metas';
  isAnd?: boolean; // 次の条件との関係 (true:AND/false:OR)
  criteria: MetaCriterion[];
 }

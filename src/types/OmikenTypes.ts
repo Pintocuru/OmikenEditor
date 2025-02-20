@@ -35,22 +35,22 @@ type CommonRulesType = BaseType & {
  isValid: boolean;
  order: number;
  color: string;
- script?: {
+ script: {
   scriptId: string;
-  settings: ScriptParam<ParamType>[] | null; // アドオンに渡す引数(Scriptから取得する)
- };
+  settings: ScriptParam<ParamType>[]; // アドオンに渡す引数(Scriptから取得する)
+ } | null;
 };
 
 // comment:コメントからおみくじを判定・抽選する
 export type CommentRulesType = CommonRulesType & {
- ruleType: 'comment';
+ ruleType: 'comments';
  threshold: CommentThreshold;
  enables: RulesSubType<CommentThreshold>[];
 };
 
 // timer:定期的におみくじを判定する
 export type TimerRulesType = CommonRulesType & {
- ruleType: 'timer';
+ ruleType: 'timers';
  threshold: TimerThreshold;
  enables: RulesSubType<TimerThreshold>[];
  timerConfig: {
@@ -61,7 +61,7 @@ export type TimerRulesType = CommonRulesType & {
 
 // meta:配信枠の情報からおみくじを判定する
 export type MetaRulesType = CommonRulesType & {
- ruleType: 'meta';
+ ruleType: 'metas';
  threshold: MetaThreshold;
  enables: RulesSubType<MetaThreshold>[];
 };

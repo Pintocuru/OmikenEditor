@@ -72,8 +72,9 @@ const CommonRuleSchema = z.object({
    scriptId: z.string(),
    settings: z.array(ScriptParamSchema)
   })
-  .optional()
-  .catch(undefined)
+  .nullable()
+  .default(null)
+  .catch(null)
 });
 
 // コメントルールのスキーマ

@@ -1,5 +1,5 @@
 // src/types/pluginType.ts
-import { OmikenType } from './OmikenTypes';
+import { OmikenType, RuleCategory } from './OmikenTypes';
 import { CharaType, ScriptType } from './preset';
 import { EditorSettingsType } from './editor';
 import { Service, ServiceMeta } from '@onecomme.com/onesdk/types/Service';
@@ -88,30 +88,30 @@ export interface UserStatsType extends DrawsType {
 // ---
 
 // おみくじ抽選で使用するデータ群
-export type SelectOmikujiOptions = SelectOmikujiOptionsComment | SelectOmikujiOptionsTimer | SelectOmikujiOptionsMeta;
+export type SelectOmikujiOptions<T extends RuleCategory> = SelectOmikujiOptionsMap[T];
 
-export interface SelectOmikujiOptionsComment {
- type: 'comment';
- comment: Comment;
- visit: VisitType;
- meta?: never;
- timeConfig: TimeConfigType;
-}
-
-export interface SelectOmikujiOptionsTimer {
- type: 'timer';
- comment?: never;
- visit?: never;
- meta?: never;
- timeConfig: TimeConfigType;
-}
-
-export interface SelectOmikujiOptionsMeta {
- type: 'meta';
- comment?: never;
- visit?: never;
- meta: ServiceMeta;
- timeConfig: TimeConfigType;
+export interface SelectOmikujiOptionsMap {
+ comments: {
+  type: 'comment';
+  comment: Comment;
+  visit: VisitType;
+  meta?: never;
+  timeConfig: never;
+ };
+ timers: {
+  type: 'timer';
+  comment?: never;
+  visit?: never;
+  meta?: never;
+  timeConfig: TimeConfigType;
+ };
+ metas: {
+  type: 'meta';
+  comment?: never;
+  visit?: never;
+  meta: ServiceMeta;
+  timeConfig: never;
+ };
 }
 
 // 選択したおみくじ
