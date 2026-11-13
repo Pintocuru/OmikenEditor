@@ -73,7 +73,7 @@ const addRuleToTypes = (state: OmikenType, optionId: string | undefined, newItem
 
  // omikujiをruleに追加
  const addOmikujiToRule = (state: OmikenType, optionId: string, newItemId: string) => {
-  const rule = state.rules[optionId];
+  const rule = Object.prototype.hasOwnProperty.call(state.rules, optionId) ? state.rules[optionId] : undefined;
   if (!rule) {
    console.warn(`Cannot add omikuji "${newItemId}" to missing rule "${optionId}".`);
    return;
