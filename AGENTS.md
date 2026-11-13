@@ -41,3 +41,10 @@
 
 ## 発見事項
 （調査結果を根拠・対象ファイルとともに追記する）
+
+## 初期レビュー記録（静的確認・未検証）
+- ファイル名の大文字小文字と import 指定に不一致が複数見られる。例: `src/App.vue` は `FunkOmiken` を import するが実ファイルは `src/composables/funkOmiken.ts`。`funkJSON.ts` / `funkValidate.ts` 等も大文字表記で import されている箇所がある。Windowsでは解決しても大文字小文字を区別する環境でビルドに失敗する可能性が高いため、全体を照合する。
+- `src/composables/funkValidate.ts`: 入力データの各項目を直接変更してからZod parseしている箇所がある。呼び出し元の状態共有・副作用を確認する。
+- `src/composables/FunkOmikenUpdater.ts`: `addRuleToTypes` が `some()` 内で `ids.push()` を実行している。最初に該当したカテゴリへ追加する仕様か、カテゴリの重複・誤追加がないか確認する。
+- `src/types/OmikenSchemas.ts`: `thresholdCountRangeSwap` は `superRefine` 内でコピーした値を書き換えているが、Zodの `superRefine` は変換結果を返す仕組みではない。range値の補正が実際に反映されるか、バリデーションテストで確認する。
+- これらはソース上の懸念であり、実行再現・仕様確認前の確定バグとは扱わない。
