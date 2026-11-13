@@ -82,7 +82,7 @@ export const OmikenOmikujisValidate = (
     const parsedItem = omikujiSchema.parse(item);
     const normalizedItem = {
      ...parsedItem,
-     placeIds: [...new Set(parsedItem.placeIds.filter((id) => places[id]))],
+     placeIds: [...new Set(parsedItem.placeIds.filter((id) => Object.prototype.hasOwnProperty.call(places, id)))],
      threshold: OmikenThresholdCompact(parsedItem.threshold)
     };
     const validItem = omikujiSchema.parse(normalizedItem);
@@ -112,7 +112,7 @@ export const OmikenRulesValidate = (
     const parsedItem = ruleSchema.parse(item);
     const normalizedItem = {
      ...parsedItem,
-     enableIds: [...new Set(parsedItem.enableIds.filter((id) => omikujis[id]))],
+     enableIds: [...new Set(parsedItem.enableIds.filter((id) => Object.prototype.hasOwnProperty.call(omikujis, id)))],
      threshold: OmikenThresholdCompact(parsedItem.threshold)
     };
     const validItem = ruleSchema.parse(normalizedItem);
@@ -137,7 +137,7 @@ export const OmikenTypesValidate = (
 ): Record<TypesType, string[]> => {
  const validatedTypes = typesSchema.parse(types);
  Object.keys(validatedTypes).forEach((typeKey) => {
-  validatedTypes[typeKey] = Array.from(new Set(validatedTypes[typeKey].filter((id: string) => id in rules)));
+  validatedTypes[typeKey] = Array.from(new Set(validatedTypes[typeKey].filter((id: string) => Object.prototype.hasOwnProperty.call(rules, id))));
  });
  const usedIds = new Set(Object.values(validatedTypes).flat());
  const unusedIds = Object.keys(rules).filter((ruleId) => !usedIds.has(ruleId));
