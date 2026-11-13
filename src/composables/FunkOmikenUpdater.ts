@@ -23,6 +23,12 @@ export function FunkOmikenUpdater() {
    const optionId = 'optionId' in item ? item.optionId : undefined;
    const newItem = OmikenEntryValidate(type, item);
 
+   // 既存IDへの上書きを防止
+   if (Object.prototype.hasOwnProperty.call(state[type], newItem.id)) {
+    console.warn(`Cannot add duplicate ${type} id: ${newItem.id}`);
+    return;
+   }
+
    // 基本データの追加
    state[type][newItem.id] = newItem;
 
@@ -54,7 +60,13 @@ export function FunkOmikenUpdater() {
 
  // rulesをtypesに追加
 const addRuleToTypes = (state: OmikenType, optionId: string | undefined, newItemId: string) => {
- if (!optionId || !Object.values(state.types).some((ids) => ids.includes(optionId) && ids.push(newItemId))) {
+ const targetTypes = optionId
+  ? Object.values(state.types).find((ids) => ids.includes(optionId))
+  : undefined;
+
+ if (targetTypes) {
+  if (!targetTypes.includes(newItemId)) targetTypes.push(newItemId);
+ } else if (!state.types.unused.includes(newItemId)) {
   state.types.unused.push(newItemId);
  }
 };
