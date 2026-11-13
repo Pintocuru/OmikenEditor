@@ -1,7 +1,7 @@
 // composables/FunkOmiken.ts
 import { provide, ref } from 'vue';
 import { OmikenType, OmikenEntry, AppEditorType, ListCategory, PresetOmikenType, OmikenSchema } from '@type';
-import { AppEditorFetch } from '@/composables/FunkJSON';
+import { AppEditorFetch } from '@/composables/funkJSON';
 import { FunkOmikenUpdater } from './FunkOmikenUpdater';
 import { FunkOmikenPreset } from './FunkOmikenPreset';
 import { MySwal } from '@/components/common/partsMySwal';
