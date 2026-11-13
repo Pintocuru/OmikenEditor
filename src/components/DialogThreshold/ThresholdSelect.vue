@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import { FunkThreshold } from '@/composables/FunkThreshold';
+import { FunkThreshold } from '@/composables/funkThreshold';
 import { ConditionType, ThresholdType } from '@type';
 import { ref } from 'vue';
 
