@@ -151,8 +151,8 @@ const ruleDefault = {
 
 export const ruleSchema = z.object({
  ...baseSchema.shape,
- color: z.string().default(ruleDefault.color).catch(ruleDefault.color), // エディターでの識別用カラー
- enableIds: z.array(z.string()).default([]).catch([]), // おみくじリスト
+ color: z.string().default(ruleDefault.color), // エディターでの識別用カラー
+ enableIds: z.array(z.string()).default([]), // おみくじリスト
  //発動条件
  threshold: z
   .array(thresholdSchema)
@@ -164,7 +164,6 @@ export const ruleSchema = z.object({
    isBaseZero: z.boolean() // ベースがゼロかどうか
   })
   .optional()
-  .catch(undefined)
 });
 
 //---
@@ -184,15 +183,14 @@ export const OneCommePostSchema = z.object({
    'speech', // わんコメのスピーチ機能
    'error' // わんコメへの投稿(プラグイン用)
   ])
-  .default('onecomme')
-  .catch('onecomme'),
- botKey: z.string().default(postDefault.botKey).catch(postDefault.botKey), // ボットキー
- iconKey: z.string().default(postDefault.iconKey).catch(postDefault.iconKey), // アイコンキー
- delaySeconds: z.number().default(0).catch(0), // メッセージを送信するまでの遅延時間
- party: z.string().optional().catch(undefined), // 発動するWordParty
- isSilent: z.boolean().optional().catch(undefined), // BOTのメッセージを読み上げない
- generatorParam: z.string().optional().catch(undefined), // ジェネレーターに渡す引数
- content: z.string().default(postDefault.content).catch(postDefault.content) // メッセージ内容
+  .default('onecomme'),
+ botKey: z.string().default(postDefault.botKey), // ボットキー
+ iconKey: z.string().default(postDefault.iconKey), // アイコンキー
+ delaySeconds: z.number().default(0), // メッセージを送信するまでの遅延時間
+ party: z.string().optional(), // 発動するWordParty
+ isSilent: z.boolean().optional(), // BOTのメッセージを読み上げない
+ generatorParam: z.string().optional(), // ジェネレーターに渡す引数
+ content: z.string().default(postDefault.content) // メッセージ内容
 });
 
 // バリデーション時にソート
@@ -213,21 +211,21 @@ const omikujiPostArraySchema = OneCommePostSchema.array()
 // omikuji:おみくじの型定義
 export const omikujiSchema = z.object({
  ...baseSchema.shape,
- rank: z.number().int().nonnegative().default(0).catch(0), // 優先度
- weight: z.number().int().nonnegative().default(1).catch(1),
+ rank: z.number().int().nonnegative().default(0), // 優先度
+ weight: z.number().int().nonnegative().default(1),
  // 発動条件
  threshold: z
   .array(thresholdSchema)
   .default([]),
- status: z.string().optional().catch(undefined), // ユーザーの任意ステータス
- point: z.string().optional().catch(undefined), // ユーザーの任意ポイント
+ status: z.string().optional(), // ユーザーの任意ステータス
+ point: z.string().optional(), // ユーザーの任意ポイント
  script: z
   .object({
    scriptId: z.string(), // 使用する外部スクリプトのid
    params: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])) // 外部スクリプトに渡す引数(Scriptから取得)
   })
   .optional(),
- placeIds: z.array(z.string()).default([]).catch([]), // 使用するプレースホルダーのid
+ placeIds: z.array(z.string()).default([]), // 使用するプレースホルダーのid
  // わんコメに渡す投稿情報
  post: omikujiPostArraySchema
 });
@@ -236,12 +234,12 @@ export const omikujiSchema = z.object({
 // placeのZodスキーマ
 export const placeSchema = z.object({
  ...baseSchema.shape,
- placeIds: z.array(z.string()).default([]).catch([]), // 使用するプレースホルダーのid
+ placeIds: z.array(z.string()).default([]), // 使用するプレースホルダーのid
  values: z
   .array(
    z.object({
-    weight: z.number().int().nonnegative().default(1).catch(1), // 出現割合
-    value: z.string().default('').catch('') // 値（他のプレースホルダーへの参照可能: <<place_name>>）
+    weight: z.number().int().nonnegative().default(1), // 出現割合
+    value: z.string().default('') // 値（他のプレースホルダーへの参照可能: <<place_name>>）
    })
   )
   .default([{ weight: 1, value: '' }])
