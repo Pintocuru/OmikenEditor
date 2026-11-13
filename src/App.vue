@@ -15,6 +15,13 @@
     </p>
    </v-container>
   </template>
+  <template v-else-if="isAppEditorError">
+   <v-container class="text-center">
+    <p>データの読み込みに失敗しました。</p>
+    <p>{{ appEditorErrorMessage }}</p>
+    <v-btn color="primary" @click="AppEditorInitialize">再試行</v-btn>
+   </v-container>
+  </template>
   <template v-else>
    <AppHeader :Omiken="AppEditor.Omiken" />
    <AppNavigation v-model:naviCategory="naviCategory" :AppEditor="AppEditor" @update:category="naviCategory = $event" />
@@ -52,7 +59,15 @@ import { onMounted } from 'vue';
 const { naviCategory, listEntry, openEditor } = FunkUI();
 
 // AppEditorのコンポーザブル
-const { AppEditor, AppEditorInitialize, isAppEditorLoading, updateOmiken, updateOmikenPresetData } = FunkOmiken();
+const {
+ AppEditor,
+ AppEditorInitialize,
+ isAppEditorLoading,
+ isAppEditorError,
+ appEditorErrorMessage,
+ updateOmiken,
+ updateOmikenPresetData
+} = FunkOmiken();
 
 // APIから取得
 onMounted(async () => await AppEditorInitialize());
