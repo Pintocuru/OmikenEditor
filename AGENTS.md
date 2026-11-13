@@ -78,3 +78,14 @@
 - 同ファイル: count.unit enumをプラグイン側の型およびエディターの選択肢に合わせて修正。従来は `totalDraws` / `gameTotalDraws` / `interval` がUIに表示されるのにschemaで拒否され、逆にプラグインが扱わない `intvlSec` がschemaで許可されていた。これにより保存・再読込時にcount条件がデフォルト化する不整合を解消する。
 - `OmikenValidate` は全体の検証で例外が起きると空の初期データを返す実装。壊れた既存データを空データとして開き、そのまま保存すると元データを失う危険がある。意図的な復旧動作か、エラー表示して保存を止めるべきかは未確認。現時点では変更しない。
 - schema修正の実行時テスト・Webpack buildは未実施。
+
+
+## import casing調査の追加結果（2026-11-13）
+- src配下のVueコンポーネント34件、composables、型定義、main/config等のimport指定を実ファイル名と照合。
+- composableの大文字小文字不一致は合計15箇所確認し、すべて実ファイル名に合わせて修正。今回の静的照合範囲では残件なし。
+- src/AppTest.ts はアプリからimportされず、exportもない。ファイルコメントはJSONデータ作成用と説明しているため、開発用補助ファイルの可能性があり削除しない。
+- ルートの webpackENV.js はpackage scriptおよび確認したWebpack/Vite設定から参照されていないように見えるが、外部手順で利用される可能性は未確認。削除保留。
+
+## 進捗更新
+- [x] src内のimport casing照合と確認済み15箇所の修正
+- [ ] 未使用候補（AppTest.ts / webpackENV.js）の利用実態確認
