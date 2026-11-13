@@ -32,9 +32,8 @@ export const OmikenEntryValidate = <T extends Exclude<ListCategory, 'types'>>(
  };
  try {
   return schemas[type].parse(data);
- } catch (e) {
-  console.error(`Validation error for ${type}:`, e instanceof Error ? e.message : e);
-  return schemas[type].parse({});
+ } catch (error) {
+  throw wrapError(`Validation error for ${type}:`, error);
  }
 };
 
@@ -49,8 +48,7 @@ export function OmikenValidate(data: Partial<OmikenType>): OmikenType {
 
   return { types, rules, omikujis, places };
  } catch (error) {
-  console.error('Omiken validation failed:', error);
-  return OmikenSchema.parse({}) as OmikenType;
+  throw wrapError('Omiken validation failed:', error);
  }
 }
 
@@ -83,10 +81,13 @@ export const OmikenOmikujisValidate = (
     const validKey = OmikenIdValidate(key, item.id);
 
     // placeIdsのフィルタリングと重複除去
-    item.placeIds = [...new Set(item.placeIds.filter((id) => places[id]))];
-    item.threshold = OmikenThresholdCompact(item.threshold);
+    const normalizedItem = {
+     ...item,
+     placeIds: [...new Set(item.placeIds.filter((id) => places[id]))],
+     threshold: OmikenThresholdCompact(item.threshold)
+    };
 
-    acc[validKey] = omikujiSchema.parse(item);
+    acc[validKey] = omikujiSchema.parse(normalizedItem);
     return acc;
    },
    {} as Record<string, OmikujiType>
@@ -108,10 +109,13 @@ export const OmikenRulesValidate = (
     const validKey = OmikenIdValidate(key, item.id);
 
     // enableIdsのフィルタリングと重複除去
-    item.enableIds = [...new Set(item.enableIds.filter((id) => omikujis[id]))];
-    item.threshold = OmikenThresholdCompact(item.threshold);
+    const normalizedItem = {
+     ...item,
+     enableIds: [...new Set(item.enableIds.filter((id) => omikujis[id]))],
+     threshold: OmikenThresholdCompact(item.threshold)
+    };
 
-    acc[validKey] = ruleSchema.parse(item);
+    acc[validKey] = ruleSchema.parse(normalizedItem);
     return acc;
    },
    {} as Record<string, RulesType>
