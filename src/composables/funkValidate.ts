@@ -54,7 +54,7 @@ export const OmikenPlacesValidate = (placesRaw: Partial<Record<string, PlaceType
  try {
   return Object.entries(placesRaw).reduce(
    (acc, [key, item]) => {
-    if (!item) return acc;
+    if (item == null) throw new Error(`Entry "${key}" is null or undefined.`);
     const parsedItem = placeSchema.parse(item);
     const validKey = OmikenIdValidate(key, parsedItem.id);
     if (Object.prototype.hasOwnProperty.call(acc, validKey)) {
@@ -78,7 +78,7 @@ export const OmikenOmikujisValidate = (
  try {
   return Object.entries(omikujisRaw).reduce(
    (acc, [key, item]) => {
-    if (!item) return acc;
+    if (item == null) throw new Error(`Entry "${key}" is null or undefined.`);
     const parsedItem = omikujiSchema.parse(item);
     const normalizedItem = {
      ...parsedItem,
@@ -108,7 +108,7 @@ export const OmikenRulesValidate = (
  try {
   return Object.entries(rulesRaw).reduce(
    (acc, [key, item]) => {
-    if (!item) return acc;
+    if (item == null) throw new Error(`Entry "${key}" is null or undefined.`);
     const parsedItem = ruleSchema.parse(item);
     const normalizedItem = {
      ...parsedItem,
