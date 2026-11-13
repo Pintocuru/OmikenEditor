@@ -2,7 +2,7 @@
 import { DataType, Mode, AppEditorType, OmikenType, ParamsType } from '@type';
 import { configs } from '@/config';
 import { MySwal } from '@/components/common/partsMySwal';
-import { OmikenValidate } from '@/composables/FunkValidate';
+import { OmikenValidate } from '@/composables/funkValidate';
 import OneSDK from '@onecomme.com/onesdk';
 
 // Omikenの保存
