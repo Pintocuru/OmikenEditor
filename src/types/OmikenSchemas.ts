@@ -226,11 +226,7 @@ export const omikujiSchema = z.object({
    scriptId: z.string(), // 使用する外部スクリプトのid
    params: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])) // 外部スクリプトに渡す引数(Scriptから取得)
   })
-  .optional()
-  .catch((error) => {
-   console.warn('Invalid omikuji.script:', error);
-   return undefined;
-  }),
+  .optional(),
  placeIds: z.array(z.string()).default([]).catch([]), // 使用するプレースホルダーのid
  // わんコメに渡す投稿情報
  post: omikujiPostArraySchema
