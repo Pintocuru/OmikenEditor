@@ -77,7 +77,7 @@ import { OmikenEntry, ListCategory, ListEntry, RulesType, TypesType } from '@typ
 import ThresholdMain from '@/components/DialogThreshold/DialogThreshold.vue';
 import { FunkEmits } from '@/composables/FunkEmits';
 import { FunkTypes } from '@/composables/FunkTypes';
-import { FunkRules } from '@/composables/FunkRules';
+import { FunkRules } from '@/composables/funkRules';
 
 const props = defineProps<{
  rule: RulesType;
