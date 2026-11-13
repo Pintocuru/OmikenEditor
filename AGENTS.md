@@ -121,3 +121,15 @@
 - 各項目を先にschema parseし、変換後の`parsedItem.id`を辞書キーに使用するよう修正。
 - 同一IDが複数項目に存在する場合、後続データが先行データを無言で上書きするため、重複を検出して検証エラーにするよう変更。
 - 確度: 高（Zod default/transformとreduce処理の静的確認）。実データでの再現・テストは未実施。
+
+
+## 外部スクリプト設定の検証（2026-11-13）
+- `src/types/OmikenSchemas.ts`: Omikujiの`script`設定に、オブジェクト検証失敗時に`undefined`へ置き換える`.catch()`が残っていたため除去。
+- scriptId / paramsが不正な場合に設定全体が消え、エディターで再保存すると外部スクリプト設定を失う可能性があった。`optional()`のみとし、未設定は許容しつつ、設定済みデータの構造不正は検証エラーにする。
+- 確度: 高（Zod schemaの静的挙動）。既存データ互換性と実行テストは未確認。
+
+## 整形・Lint設定の確認（2026-11-13）
+- 両リポジトリに`.prettierrc`と`.eslintrc.js`が既に存在。
+- OmikenEditorはPrettier / ESLint / eslint-config-prettier等がdevDependenciesに存在する。OmikenPluginは`.eslintrc.js`と`.prettierrc`はあるが、package.jsonにはPrettier / ESLint本体と関連プラグインが見当たらないため、設定ファイルだけでは実行可能なLint環境とは確認できない。
+- OmikujiBotV3から`.prettier`設定を移植する必要はない。既存の両リポジトリ設定を基準とし、フォーマット目的の全ファイル一括変更は避ける。
+- OmikenEditorの`.eslintrc.js`はESLint 9系を依存指定している一方、従来形式の設定ファイルである。ESLint 9での実行にはFlat Configとの互換性確認が必要。実行環境がないためLint実行は未確認。
