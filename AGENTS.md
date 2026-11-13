@@ -60,3 +60,14 @@
 ## 進捗更新
 - [x] package scripts・主要ビルド設定・ソース配置の静的照合
 - [ ] ローカル実行環境でのビルド／テスト実行（GitHub上のファイル参照のみでは実行結果を確認できない）
+
+
+## 修正（2026-11-13）
+- 大文字小文字が一致していなかった composable import 5箇所を修正。対象: `src/App.vue`（FunkOmiken/FunkUI）、`src/composables/FunkOmikenUpdater.ts`（FunkValidate）、`src/composables/funkJSON.ts`（FunkValidate）、`src/composables/funkOmiken.ts`（FunkJSON）。実ファイル名に合わせた。
+- これにより確認済みの5箇所は解消。ほかのディレクトリに同種の不一致が残っていないかは未確認。
+- GitHub 上でソースを更新した段階。ローカルでのWebpack build / Vite起動 / TypeScript検証は未実施。
+
+## 進捗更新
+- [x] 確認済みのcomposable import casing不一致を修正
+- [ ] src全体のimport casing照合
+- [ ] Webpack build / Vite起動 / TypeScript検証
