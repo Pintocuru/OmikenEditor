@@ -49,7 +49,7 @@ import { computed } from 'vue';
 import  { ListCategory, ListEntry, OmikenEntry,  CategoryActive, AppEditorType } from '@type';
 import PartsArrayAction from '@/components/common/PartsArrayAction.vue';
 import { FunkOmikuji } from '@/composables/FunkOmikuji';
-import { FunkThreshold } from '@/composables/FunkThreshold';
+import { FunkThreshold } from '@/composables/funkThreshold';
 import { FunkEmits } from '@/composables/FunkEmits';
 
 const props = defineProps<{
