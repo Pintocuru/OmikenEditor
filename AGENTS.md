@@ -48,3 +48,15 @@
 - `src/composables/FunkOmikenUpdater.ts`: `addRuleToTypes` が `some()` 内で `ids.push()` を実行している。最初に該当したカテゴリへ追加する仕様か、カテゴリの重複・誤追加がないか確認する。
 - `src/types/OmikenSchemas.ts`: `thresholdCountRangeSwap` は `superRefine` 内でコピーした値を書き換えているが、Zodの `superRefine` は変換結果を返す仕組みではない。range値の補正が実際に反映されるか、バリデーションテストで確認する。
 - これらはソース上の懸念であり、実行再現・仕様確認前の確定バグとは扱わない。
+
+
+## ベースライン調査（2026-11-13）
+- package.json の dev はVite、build はWebpackを実行する。vite.config.mjs と webpack.config.mjs は異なる出力目的を持つ設定に見えるため、単純な重複・未使用とは扱わない。Webpackは dist/editor.html とEditor配下の成果物を生成する構成で、Viteは開発サーバー用の設定を含む。
+- package-lock.json と yarn.lock が併存している。どちらを正式な依存管理に使っていたか未確認。依存更新は行わず、ロック内容と履歴を照合する。
+- src/App.vue は @/composables/FunkOmiken・FunkUI を import しているが、ツリー上の実ファイル名は funkOmiken.ts・funkUI.ts。src/composables/funkJSON.ts も FunkValidate を import する一方、実ファイルは funkValidate.ts。大文字小文字を区別する環境での解決失敗リスクがある（確度: 高）。関連する全importの照合が必要。
+- README.md は「編集中」の記載を含み、説明内のビルド手順・依存一覧が現行 package.json と一致しない。ドキュメント品質の問題として記録し、動作確認後に更新候補とする。
+- Git Trees API上のソースファイル数は69。GitHub Actions workflow定義は見当たらず、自動検証は未確認。
+
+## 進捗更新
+- [x] package scripts・主要ビルド設定・ソース配置の静的照合
+- [ ] ローカル実行環境でのビルド／テスト実行（GitHub上のファイル参照のみでは実行結果を確認できない）
