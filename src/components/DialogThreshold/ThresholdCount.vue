@@ -45,7 +45,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { FunkThreshold } from '@/composables/FunkThreshold';
+import { FunkThreshold } from '@/composables/funkThreshold';
 import { ThresholdType, TypesType } from '@type';
 
 const props = defineProps<{
