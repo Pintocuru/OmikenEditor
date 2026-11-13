@@ -100,7 +100,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
 import { ThresholdType, ConditionType, TypesType, RulesType, OmikujiType, OmikenEntry, ListCategory } from '@type';
-import { FunkThresholdInitial, FunkThreshold } from '@/composables/FunkThreshold';
+import { FunkThresholdInitial, FunkThreshold } from '@/composables/funkThreshold';
 import ThresholdSelect from './ThresholdSelect.vue';
 import ThresholdSimple from './ThresholdSimple.vue';
 import ThresholdCount from './ThresholdCount.vue';
