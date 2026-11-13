@@ -134,9 +134,9 @@
 import { computed } from 'vue';
 import { ListCategory, ListEntry, OmikenTypeMap, OmikenEntry, OmikujiType, RulesType } from '@type';
 import PartsArrayAction from '@/components/common/PartsArrayAction.vue';
-import { FunkRules } from '@/composables/FunkRules';
+import { FunkRules } from '@/composables/funkRules';
 import { FunkOmikuji } from '@/composables/FunkOmikuji';
-import { FunkThreshold } from '@/composables/FunkThreshold';
+import { FunkThreshold } from '@/composables/funkThreshold';
 import { FunkEmits } from '@/composables/FunkEmits';
 import draggable from 'vuedraggable';
 
