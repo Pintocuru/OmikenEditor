@@ -1,6 +1,6 @@
 // composables/FunkOmikenUpdater.ts
 import { OmikenType, ListCategory, TypesType, OmikenEntry, AddKeysCategory } from '@type';
-import { OmikenEntryValidate } from '@/composables/FunkValidate';
+import { OmikenEntryValidate } from '@/composables/funkValidate';
 
 export function FunkOmikenUpdater() {
  // 配列化のユーティリティ関数
