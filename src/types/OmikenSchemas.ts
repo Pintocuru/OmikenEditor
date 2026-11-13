@@ -122,8 +122,7 @@ export const thresholdSchema = z
   gift: z.nativeEnum(GiftCondition).optional().default(thresholdDefault.gift), // ギフトの有無と金額判定
   count: thresholdCountRangeSwap(thresholdCountSchema).optional().default(thresholdDefault.count), // 数値を参照する
   match: thresholdMatchSchema.optional().default(thresholdDefault.match) // 文字列を参照する
- })
- ;
+ });
 
 // ユニークキーの生成
 export const generateUniqueKey = (): string => `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
@@ -157,8 +156,7 @@ export const ruleSchema = z.object({
  //発動条件
  threshold: z
   .array(thresholdSchema)
-  .default([ruleDefault.threshold])
-  ,
+  .default([ruleDefault.threshold]),
  // タイマー用設定リスト
  timerConfig: z
   .object({
@@ -220,8 +218,7 @@ export const omikujiSchema = z.object({
  // 発動条件
  threshold: z
   .array(thresholdSchema)
-  .default([])
-  ,
+  .default([]),
  status: z.string().optional().catch(undefined), // ユーザーの任意ステータス
  point: z.string().optional().catch(undefined), // ユーザーの任意ポイント
  script: z
@@ -252,7 +249,6 @@ export const placeSchema = z.object({
    })
   )
   .default([{ weight: 1, value: '' }])
-  
 });
 //---
 
