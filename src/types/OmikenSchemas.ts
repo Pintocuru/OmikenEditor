@@ -45,11 +45,13 @@ export const thresholdCountSchema = z.object({
   'loop' // 数値をvalue1で割った数
  ]),
  unit: z.enum([
-  'draws', // その枠でrulesに該当した回数(個人)
-  'gameDraws', // その配信枠でrulesに該当した回数(合計)
-  'lc', // 配信枠のコメント数(プラグインで独自に付与)
-  'tc', // 総数の個人コメ数(userData.tc)
-  'intvlSec' // そのユーザーの前回のコメントからの経過時間(ミリ秒)(userData.interval)
+  'draws', // 個人:配信内のおみくじ回数
+  'totalDraws', // 個人:過去すべてのおみくじ回数
+  'gameDraws', // 総数:配信内のおみくじ回数
+  'gameTotalDraws', // 総数:過去すべてのおみくじ回数
+  'lc', // 配信枠のコメント数
+  'tc', // 個人の総コメント数
+  'interval' // 前回のコメントからの経過時間(秒)
  ]),
  value1: thresholdValueTransform,
  value2: thresholdValueTransform.optional()
