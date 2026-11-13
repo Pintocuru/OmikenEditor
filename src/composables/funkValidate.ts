@@ -129,7 +129,7 @@ export const OmikenTypesValidate = (
  types: Record<TypesType, string[]> = typesSchema.parse({}) as Record<TypesType, string[]>,
  rules: Record<string, RulesType>
 ): Record<TypesType, string[]> => {
- const validatedTypes = JSON.parse(JSON.stringify(types));
+ const validatedTypes = typesSchema.parse(types);
 
  // 各タイプの配列をバリデート
  Object.keys(validatedTypes).forEach((typeKey) => {
