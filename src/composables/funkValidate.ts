@@ -10,7 +10,6 @@ import {
  OmikenTypeMap
 } from '@type';
 import {
- OmikenSchema,
  omikujiSchema,
  placeSchema,
  ruleSchema,
@@ -184,4 +183,4 @@ const OmikenThresholdCompact = (thresholds: ThresholdType[]): ThresholdType[] =>
 };
 
 const wrapError = (message: string, error: unknown): Error =>
- error instanceof Error ? error : new Error(`${message} ${error}`);
+ new Error(`${message} ${error instanceof Error ? error.message : String(error)}`);
