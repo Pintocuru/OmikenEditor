@@ -61,10 +61,13 @@ const addRuleToTypes = (state: OmikenType, optionId: string | undefined, newItem
 
  // omikujiをruleに追加
  const addOmikujiToRule = (state: OmikenType, optionId: string, newItemId: string) => {
-  state.rules[optionId] = {
-   ...state.rules[optionId],
-   enableIds: [...state.rules[optionId].enableIds, newItemId]
-  };
+  const rule = state.rules[optionId];
+  if (!rule) {
+   console.warn(`Cannot add omikuji "${newItemId}" to missing rule "${optionId}".`);
+   return;
+  }
+
+  rule.enableIds = [...rule.enableIds, newItemId];
  };
 
  // typesから要素を削除
