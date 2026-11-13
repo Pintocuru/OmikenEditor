@@ -137,7 +137,7 @@ export const OmikenTypesValidate = (
 ): Record<TypesType, string[]> => {
  const validatedTypes = typesSchema.parse(types);
  Object.keys(validatedTypes).forEach((typeKey) => {
-  validatedTypes[typeKey] = Array.from(new Set(validatedTypes[typeKey].filter((id: TypesType) => id in rules)));
+  validatedTypes[typeKey] = Array.from(new Set(validatedTypes[typeKey].filter((id: string) => id in rules)));
  });
  const usedIds = new Set(Object.values(validatedTypes).flat());
  const unusedIds = Object.keys(rules).filter((ruleId) => !usedIds.has(ruleId));
