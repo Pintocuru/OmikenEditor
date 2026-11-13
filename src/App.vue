@@ -45,8 +45,8 @@ import AppHeader from '@/components/AppHeader.vue';
 import AppNavigation from '@/components/AppNavigation.vue';
 import AppList from '@/components/AppList.vue';
 import AppDialog from '@/components/AppDialog.vue';
-import { FunkOmiken } from '@/composables/FunkOmiken';
-import { FunkUI } from '@/composables/FunkUI';
+import { FunkOmiken } from '@/composables/funkOmiken';
+import { FunkUI } from '@/composables/funkUI';
 import { onMounted } from 'vue';
 
 const { naviCategory, listEntry, openEditor } = FunkUI();
