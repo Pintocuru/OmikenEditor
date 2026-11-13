@@ -39,12 +39,10 @@ export const OmikenEntryValidate = <T extends Exclude<ListCategory, 'types'>>(
 // メインのバリデーション関数
 export function OmikenValidate(data: Partial<OmikenType>): OmikenType {
  try {
-  // 依存関係の順序に従ってバリデーション
   const places = OmikenPlacesValidate(data.places);
   const omikujis = OmikenOmikujisValidate(data.omikujis, places);
   const rules = OmikenRulesValidate(data.rules, omikujis);
   const types = OmikenTypesValidate(data.types, rules);
-
   return { types, rules, omikujis, places };
  } catch (error) {
   throw wrapError('Omiken validation failed:', error);
@@ -81,18 +79,18 @@ export const OmikenOmikujisValidate = (
   return Object.entries(omikujisRaw).reduce(
    (acc, [key, item]) => {
     if (!item) return acc;
-    // placeIdsのフィルタリングと重複除去
+    const parsedItem = omikujiSchema.parse(item);
     const normalizedItem = {
-     ...item,
-     placeIds: [...new Set(item.placeIds.filter((id) => places[id]))],
-     threshold: OmikenThresholdCompact(item.threshold)
+     ...parsedItem,
+     placeIds: [...new Set(parsedItem.placeIds.filter((id) => places[id]))],
+     threshold: OmikenThresholdCompact(parsedItem.threshold)
     };
-    const parsedItem = omikujiSchema.parse(normalizedItem);
-    const validKey = OmikenIdValidate(key, parsedItem.id);
+    const validItem = omikujiSchema.parse(normalizedItem);
+    const validKey = OmikenIdValidate(key, validItem.id);
     if (Object.prototype.hasOwnProperty.call(acc, validKey)) {
      throw new Error(`Duplicate omikuji id: ${validKey}`);
     }
-    acc[validKey] = parsedItem;
+    acc[validKey] = validItem;
     return acc;
    },
    {} as Record<string, OmikujiType>
@@ -111,18 +109,18 @@ export const OmikenRulesValidate = (
   return Object.entries(rulesRaw).reduce(
    (acc, [key, item]) => {
     if (!item) return acc;
-    // enableIdsのフィルタリングと重複除去
+    const parsedItem = ruleSchema.parse(item);
     const normalizedItem = {
-     ...item,
-     enableIds: [...new Set(item.enableIds.filter((id) => omikujis[id]))],
-     threshold: OmikenThresholdCompact(item.threshold)
+     ...parsedItem,
+     enableIds: [...new Set(parsedItem.enableIds.filter((id) => omikujis[id]))],
+     threshold: OmikenThresholdCompact(parsedItem.threshold)
     };
-    const parsedItem = ruleSchema.parse(normalizedItem);
-    const validKey = OmikenIdValidate(key, parsedItem.id);
+    const validItem = ruleSchema.parse(normalizedItem);
+    const validKey = OmikenIdValidate(key, validItem.id);
     if (Object.prototype.hasOwnProperty.call(acc, validKey)) {
      throw new Error(`Duplicate rule id: ${validKey}`);
     }
-    acc[validKey] = parsedItem;
+    acc[validKey] = validItem;
     return acc;
    },
    {} as Record<string, RulesType>
@@ -130,7 +128,7 @@ export const OmikenRulesValidate = (
  } catch (error) {
   throw wrapError('Rules validation error:', error);
  }
-};
+}
 
 // タイプのバリデーション
 export const OmikenTypesValidate = (
@@ -138,17 +136,12 @@ export const OmikenTypesValidate = (
  rules: Record<string, RulesType>
 ): Record<TypesType, string[]> => {
  const validatedTypes = typesSchema.parse(types);
-
- // 各タイプの配列をバリデート
  Object.keys(validatedTypes).forEach((typeKey) => {
   validatedTypes[typeKey] = Array.from(new Set(validatedTypes[typeKey].filter((id: TypesType) => id in rules)));
  });
-
- // 未使用のルールIDを'unused'に追加
  const usedIds = new Set(Object.values(validatedTypes).flat());
  const unusedIds = Object.keys(rules).filter((ruleId) => !usedIds.has(ruleId));
  validatedTypes.unused = [...validatedTypes.unused, ...unusedIds];
-
  return validatedTypes;
 };
 
