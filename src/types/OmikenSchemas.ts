@@ -57,7 +57,7 @@ export const thresholdCountSchema = z.object({
 
 // value1 と value2 のチェック関数
 const thresholdCountRangeSwap = (schema: typeof thresholdCountSchema) =>
- schema.superRefine((data, ctx) => {
+ schema.transform((data): z.infer<typeof thresholdCountSchema> => {
   const result = { ...data };
   if (result.comparison === 'range') {
    // rangeの場合はvalue2が必須
