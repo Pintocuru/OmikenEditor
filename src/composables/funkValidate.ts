@@ -57,8 +57,12 @@ export const OmikenPlacesValidate = (placesRaw: Partial<Record<string, PlaceType
   return Object.entries(placesRaw).reduce(
    (acc, [key, item]) => {
     if (!item) return acc;
-    const validKey = OmikenIdValidate(key, item.id);
-    acc[validKey] = placeSchema.parse(item);
+    const parsedItem = placeSchema.parse(item);
+    const validKey = OmikenIdValidate(key, parsedItem.id);
+    if (Object.prototype.hasOwnProperty.call(acc, validKey)) {
+     throw new Error(`Duplicate place id: ${validKey}`);
+    }
+    acc[validKey] = parsedItem;
     return acc;
    },
    {} as Record<string, PlaceType>
@@ -77,16 +81,18 @@ export const OmikenOmikujisValidate = (
   return Object.entries(omikujisRaw).reduce(
    (acc, [key, item]) => {
     if (!item) return acc;
-    const validKey = OmikenIdValidate(key, item.id);
-
     // placeIdsのフィルタリングと重複除去
     const normalizedItem = {
      ...item,
      placeIds: [...new Set(item.placeIds.filter((id) => places[id]))],
      threshold: OmikenThresholdCompact(item.threshold)
     };
-
-    acc[validKey] = omikujiSchema.parse(normalizedItem);
+    const parsedItem = omikujiSchema.parse(normalizedItem);
+    const validKey = OmikenIdValidate(key, parsedItem.id);
+    if (Object.prototype.hasOwnProperty.call(acc, validKey)) {
+     throw new Error(`Duplicate omikuji id: ${validKey}`);
+    }
+    acc[validKey] = parsedItem;
     return acc;
    },
    {} as Record<string, OmikujiType>
@@ -105,16 +111,18 @@ export const OmikenRulesValidate = (
   return Object.entries(rulesRaw).reduce(
    (acc, [key, item]) => {
     if (!item) return acc;
-    const validKey = OmikenIdValidate(key, item.id);
-
     // enableIdsのフィルタリングと重複除去
     const normalizedItem = {
      ...item,
      enableIds: [...new Set(item.enableIds.filter((id) => omikujis[id]))],
      threshold: OmikenThresholdCompact(item.threshold)
     };
-
-    acc[validKey] = ruleSchema.parse(normalizedItem);
+    const parsedItem = ruleSchema.parse(normalizedItem);
+    const validKey = OmikenIdValidate(key, parsedItem.id);
+    if (Object.prototype.hasOwnProperty.call(acc, validKey)) {
+     throw new Error(`Duplicate rule id: ${validKey}`);
+    }
+    acc[validKey] = parsedItem;
     return acc;
    },
    {} as Record<string, RulesType>
