@@ -16,6 +16,8 @@ const defaultAppEditor: AppEditorType = {
 export function FunkOmiken() {
  const AppEditor = ref<AppEditorType>(defaultAppEditor);
  const isAppEditorLoading = ref(true);
+ const isAppEditorError = ref(false);
+ const appEditorErrorMessage = ref('');
 
  // 他のコンポーザブルを初期化
  const { handleUpdate, handleAddItems, handleDeleteItems, handleReTypes } = FunkOmikenUpdater();
@@ -26,6 +28,9 @@ export function FunkOmiken() {
 
  // 初期化処理の実行
  async function AppEditorInitialize() {
+  isAppEditorLoading.value = true;
+  isAppEditorError.value = false;
+  appEditorErrorMessage.value = '';
   try {
    AppEditor.value = await AppEditorFetch();
    isAppEditorLoading.value = false; // ローディング完了
@@ -39,6 +44,9 @@ export function FunkOmiken() {
   } catch (error) {
    console.error('Initialization failed', error);
    const errorMessage = error instanceof Error ? error.message : 'データの読み込みに失敗しました。';
+   appEditorErrorMessage.value = errorMessage;
+   isAppEditorError.value = true;
+   isAppEditorLoading.value = false;
 
    await MySwal.fire({
     title: '読み込み失敗',
@@ -78,6 +86,8 @@ export function FunkOmiken() {
   AppEditor,
   AppEditorInitialize,
   isAppEditorLoading,
+  isAppEditorError,
+  appEditorErrorMessage,
   updateOmiken,
   updateOmikenPresetData
  };
