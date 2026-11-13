@@ -159,3 +159,9 @@
 ## ルールIDフィルタの型整合性（2026-11-13）
 - `src/composables/funkValidate.ts`: `OmikenTypesValidate()`内のIDフィルタ引数型を`TypesType`から`string`へ修正。配列要素はルールID文字列であり、`TypesType`はカテゴリ名のunionなので型の意味が一致していなかった。実行時の判定条件は変更なし。
 - 型チェック・ビルドは実施しない方針のため、静的な型整合性の修正として記録。
+
+
+## 追加レビュー・確認（2026-11-13）
+- `src/composables/FunkOmikenUpdater.ts`: `handleUpdate` は更新オブジェクトを辞書内エントリーへObject.assignするため、仮にIDを変更すると辞書キーとentry.idが不一致になる可能性がある。
+- 確認した編集UI（`PartsNameEditor.vue`、`ListRules.vue`、`ListRulesOmikujis.vue`）ではIDを編集する入力は見当たらず、名前・説明・色・ランク・weight等の更新が中心。ID変更を実装する根拠は確認できないため、汎用updaterの仕様変更は行わない。ほかの編集画面・外部呼び出しを含む全経路は未確認。
+- ルール削除時はtypes配列からIDを除去し、おみくじ削除時は全ルールのenableIdsからIDを除去する処理を確認。現状の削除参照整理は維持。
