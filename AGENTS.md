@@ -133,3 +133,14 @@
 - OmikenEditorはPrettier / ESLint / eslint-config-prettier等がdevDependenciesに存在する。OmikenPluginは`.eslintrc.js`と`.prettierrc`はあるが、package.jsonにはPrettier / ESLint本体と関連プラグインが見当たらないため、設定ファイルだけでは実行可能なLint環境とは確認できない。
 - OmikujiBotV3から`.prettier`設定を移植する必要はない。既存の両リポジトリ設定を基準とし、フォーマット目的の全ファイル一括変更は避ける。
 - OmikenEditorの`.eslintrc.js`はESLint 9系を依存指定している一方、従来形式の設定ファイルである。ESLint 9での実行にはFlat Configとの互換性確認が必要。実行環境がないためLint実行は未確認。
+
+
+## 追加修正：入力データ正規化の順序（2026-11-13）
+- `src/composables/funkValidate.ts`: Omikujiの`placeIds`、Ruleの`enableIds`をZod parseより前にfilterしていたため、配列自体が省略されたデータで`undefined.filter`となり、schemaで定義したdefault配列が適用される前に例外になる経路を修正。
+- 先に各schemaでparseしてdefault値と型を確定し、その結果に対して参照IDの整理・thresholdの正規化を行い、最後に再parseする順序へ変更。
+- 確度: 高（静的確認）。実行テストは未実施。
+- `src/types/OmikenSchemas.ts`: 設定済み値の型不正を既定値に置き換えるフィールド単位の`.catch()`を整理。Ruleのcolor/enableIds/timerConfig、Omikujiの投稿type・botKey・iconKey・delaySeconds・optional fields・rank/weight/placeIds/status/point、PlaceのplaceIds/values内weight/valueについてcatchを除去し、未設定時のdefault/optionalは維持。不正値は検証エラーとして読込を止める。
+- baseSchemaのid/name/descriptionに残るcatchは維持。旧データのID補完や表示テキスト互換性に関わる可能性があり、現状の一括除去は避ける。
+- schema内部の残存catchはbaseSchemaのid/name/descriptionのみ。ほかのフィールド単位catchは今回の確認範囲で除去。
+- 既存データに型不正値が含まれている場合、以前は既定値へ補正されていたものが今後は読込エラーになる。実データの棚卸し・実行検証が必要。
+- 変更後のWebpack build / Vite起動 / 実データ読込テストは未実施。
