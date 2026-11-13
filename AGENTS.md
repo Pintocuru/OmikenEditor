@@ -71,3 +71,10 @@
 - [x] 確認済みのcomposable import casing不一致を修正
 - [ ] src全体のimport casing照合
 - [ ] Webpack build / Vite起動 / TypeScript検証
+
+
+## 追加修正・レビュー（2026-11-13）
+- `src/types/OmikenSchemas.ts`: count条件の範囲補正を `superRefine` から `transform` に変更。Zodのrefinementは戻り値を変換結果として採用しないため、これまで範囲の値入れ替え・value2補完・非range時のvalue2削除が出力に反映されていなかった問題を修正。
+- 同ファイル: count.unit enumをプラグイン側の型およびエディターの選択肢に合わせて修正。従来は `totalDraws` / `gameTotalDraws` / `interval` がUIに表示されるのにschemaで拒否され、逆にプラグインが扱わない `intvlSec` がschemaで許可されていた。これにより保存・再読込時にcount条件がデフォルト化する不整合を解消する。
+- `OmikenValidate` は全体の検証で例外が起きると空の初期データを返す実装。壊れた既存データを空データとして開き、そのまま保存すると元データを失う危険がある。意図的な復旧動作か、エラー表示して保存を止めるべきかは未確認。現時点では変更しない。
+- schema修正の実行時テスト・Webpack buildは未実施。
