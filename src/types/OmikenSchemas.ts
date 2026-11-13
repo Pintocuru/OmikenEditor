@@ -123,22 +123,7 @@ export const thresholdSchema = z
   count: thresholdCountRangeSwap(thresholdCountSchema).optional().default(thresholdDefault.count), // 数値を参照する
   match: thresholdMatchSchema.optional().default(thresholdDefault.match) // 文字列を参照する
  })
- .catch((error) => {
-  console.warn('Invalid threshold:', error);
-  // デフォルトの値を返す
-  return {
-   conditionType: 'match',
-   isNot: thresholdDefault.isNot,
-   isAnd: thresholdDefault.isAnd,
-   target: thresholdDefault.target,
-   coolDown: thresholdDefault.coolDown,
-   syoken: thresholdDefault.syoken,
-   access: thresholdDefault.access,
-   gift: thresholdDefault.gift,
-   count: thresholdDefault.count,
-   match: thresholdDefault.match
-  };
- });
+ ;
 
 // ユニークキーの生成
 export const generateUniqueKey = (): string => `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
@@ -173,10 +158,7 @@ export const ruleSchema = z.object({
  threshold: z
   .array(thresholdSchema)
   .default([ruleDefault.threshold])
-  .catch((error) => {
-   console.warn('Invalid rule.threshold:', error);
-   return [];
-  }),
+  ,
  // タイマー用設定リスト
  timerConfig: z
   .object({
@@ -239,10 +221,7 @@ export const omikujiSchema = z.object({
  threshold: z
   .array(thresholdSchema)
   .default([])
-  .catch((error) => {
-   console.warn('Invalid omikuji.threshold:', error);
-   return [];
-  }),
+  ,
  status: z.string().optional().catch(undefined), // ユーザーの任意ステータス
  point: z.string().optional().catch(undefined), // ユーザーの任意ポイント
  script: z
@@ -257,10 +236,7 @@ export const omikujiSchema = z.object({
   }),
  placeIds: z.array(z.string()).default([]).catch([]), // 使用するプレースホルダーのid
  // わんコメに渡す投稿情報
- post: omikujiPostArraySchema.catch((error) => {
-  console.warn('Invalid omikuji.post:', error);
-  return [];
- })
+ post: omikujiPostArraySchema
 });
 //---
 
@@ -276,10 +252,7 @@ export const placeSchema = z.object({
    })
   )
   .default([{ weight: 1, value: '' }])
-  .catch((error) => {
-   console.warn('Invalid place.values:', error);
-   return [{ weight: 1, value: '' }];
-  })
+  
 });
 //---
 
