@@ -174,3 +174,10 @@
 - `FunkOmikenUpdater.ts` と `FunkEmits.ts` を再確認。IDを含む単一エントリー更新はIDを辞書キーにしてマージする設計。現状確認したUIではID入力がなく、ID変更を許容する仕様の根拠なし。
 - ルール削除時は全types配列からIDを除去し、おみくじ削除時は全ルールのenableIdsから除去する。型データ検証時にも参照先の存在確認と重複排除が行われるため、現時点で安全に修正すべき明確な不具合は見つからず。
 - `FunkOmikenPreset.ts` は既存IDを保持しつつ不足分を追加するマージ方式。上書きモードではプリセットの各カテゴリを置換する。現在の仕様と整合しているかは製品仕様がないため未確認、変更なし。
+
+
+## 参照IDの安全性（2026-11-13）
+- `src/composables/funkValidate.ts`: places / omikujis / rules の参照検証で `record[id]` や `id in rules` を使用していた。通常のオブジェクトでは `constructor` / `toString` 等の継承プロパティも有効と判定され、存在しない参照IDが残る可能性がある。
+- 辞書自身が所有するキーかを `Object.prototype.hasOwnProperty.call` で判定するよう変更。これにより、継承プロパティを参照先として扱わない。
+- `src/composables/FunkOmikenUpdater.ts`: 追加時のルール取得も同様に所有キーを確認してから参照するよう変更。
+- 重要度: Medium / 確度: 高（静的確認）。UI操作・実データによる実行テストは未実施。
